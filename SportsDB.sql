@@ -1,7 +1,7 @@
 ﻿-- Sports Management System --
 
 
--- Creating All Tables --
+-- Create All Tables --
 create proc createAllTables as
 
 begin
@@ -128,3 +128,28 @@ constraint FK_TicketTransaction_Fan foreign key (fan_id) references Fan
 
 end
 -------------------------
+
+
+go
+
+-- Drop All Tables --
+create proc dropAllTables as
+
+begin
+
+drop table SystemAdmin;
+drop table Fan;
+drop table AssociationManager;
+drop table Stadium;
+drop table SportsMatch;
+drop table Ticket;
+drop table Club;
+drop table AdminBlocksFan;
+drop table StadiumManager;
+drop table ClubRep;
+drop table ClubsPlayMatch;
+drop table ManagerRequestsRep;
+drop table TicketTransaction;
+
+end
+---------------------

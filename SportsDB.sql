@@ -4,12 +4,10 @@
 -- Create All Tables --
 create proc createAllTables as
 
-begin
-
 	create table SystemAdmin
 	(
 		username varchar(20),
-		pass varchar(20)
+		pass varchar(20),
 		constraint PK_SystemAdmin primary key (username)
 	);
 
@@ -22,7 +20,7 @@ begin
 		phone varchar(20), 
 		full_address varchar(20),
 		birth_date date,
-		fan_status bit
+		fan_status bit,
 		constraint PK_Fan primary key (national_id)
 	);
 
@@ -30,7 +28,7 @@ begin
 	(
 		username varchar(20),
 		full_name varchar(20),
-		pass varchar(20)
+		pass varchar(20),
 		constraint PK_AssociationManager primary key (username)
 	);
 
@@ -41,9 +39,30 @@ begin
 		stad_location varchar(20), 
 		capacity int, 
 		availability_status bit, 
-		admin_username varchar(20)
-		constraint PK_Stadium primary key (stadium_id)
+		admin_username varchar(20),
+		constraint PK_Stadium primary key (stadium_id),
 		constraint FK_Stadium_SystemAdmin foreign key (admin_username) references SystemAdmin
+	);
+
+	create table Club
+	(
+		club_id int identity, 
+		full_name varchar(20), 
+		club_location varchar(20), 
+		admin_username varchar(20),
+		constraint PK_Club primary key (club_id),
+		constraint FK_Club_SystemAdmin foreign key (admin_username) references SystemAdmin
+	);
+
+	create table ClubRep
+	(
+		club_rep_id int identity,
+		club_id int,
+		username varchar(20), 
+		pass varchar(20), 
+		full_name varchar(20),
+		constraint PK_ClubRep primary key (club_rep_id),
+		constraint FK_ClubRep_Club foreign key (club_id) references Club
 	);
 
 	create table SportsMatch
@@ -55,11 +74,11 @@ begin
 		home_club_id int,
 		away_club_id int,
 		stadium_id int, 
-		assoc_manager_username varchar(20)
-		constraint PK_SportsMatch primary key (match_id)
-		constraint FK_SportsMatch_HomeClub foreign key (home_club_id) references Club
-		constraint FK_SportsMatch_AwayClub foreign key (away_club_id) references Club
-		constraint FK_SportsMatch_Stadium foreign key (stadium_id) references Stadium
+		assoc_manager_username varchar(20),
+		constraint PK_SportsMatch primary key (match_id),
+		constraint FK_SportsMatch_HomeClub foreign key (home_club_id) references Club,
+		constraint FK_SportsMatch_AwayClub foreign key (away_club_id) references Club,
+		constraint FK_SportsMatch_Stadium foreign key (stadium_id) references Stadium,
 		constraint FK_SportsMatch_AssociationManager foreign key (assoc_manager_username) references AssociationManager
 	);
 
@@ -67,19 +86,9 @@ begin
 	(
 		ticket_id int identity, 
 		availability_status bit, 
-		stadium_id int
-		constraint PK_Ticket primary key (ticket_id)
+		stadium_id int,
+		constraint PK_Ticket primary key (ticket_id),
 		constraint FK_Ticket_Stadium foreign key (stadium_id) references Stadium
-	);
-
-	create table Club
-	(
-		club_id int identity, 
-		full_name varchar(20), 
-		club_location varchar(20), 
-		admin_username varchar(20)
-		constraint PK_Club primary key (club_id)
-		constraint FK_Club_SystemAdmin foreign key (admin_username) references SystemAdmin
 	);
 
 	create table StadiumManager
@@ -88,52 +97,39 @@ begin
 		stadium_id int,
 		username varchar(20), 
 		pass varchar(20), 
-		full_name varchar(20)
-		constraint PK_StadiumManager primary key (stadium_manager_id, stadium_id)
+		full_name varchar(20),
+		constraint PK_StadiumManager primary key (stadium_manager_id),
 		constraint FK_StadiumManager_Stadium foreign key (stadium_id) references Stadium
 	);
 
-	create table ClubRep
+	create table RepRequestsStadium
 	(
-		club_rep_id int identity,
-		club_id int,
-		username varchar(20), 
-		pass varchar(20), 
-		full_name varchar(20)
-		constraint PK_ClubRep primary key (club_rep_id, club_id)
-		constraint FK_ClubRep_Club foreign key (club_id) references Club
-	);
-
-	create table ManagerRequestsRep
-	(
-		clup_rep_id int, 
+		request_id int identity,
+		club_rep_id int, 
 		stadium_manager_id int, 
-		is_approved bit
-		constraint PK_ManagerRequestsRep primary key (club_rep_id, stadium_manager_id)
-		constraint FK_ManagerRequestsRep_ClubRep foreign key (club_rep_id) references ClubRep
-		constraint FK_ManagerRequestsRep_StadiumManager foreign key (stadium_manager_id) references StadiumManager
+		is_approved bit,
+		constraint PK_RepRequestsStadium primary key (request_id),
+		constraint FK_RepRequestsStadium_ClubRep foreign key (club_rep_id) references ClubRep,
+		constraint FK_RepRequestsStadium_StadiumManager foreign key (stadium_manager_id) references StadiumManager
 	);
 
 	create table TicketTransaction
 	(
+		transaction_id int identity,
 		ticket_id int, 
 		match_id int, 
-		fan_id varchar(20)
-		constraint PK_TicketTransaction primary key (ticket_id, match_id, fan_id)
-		constraint FK_TicketTransaction_Ticket foreign key (ticket_id) references Ticket
-		constraint FK_TicketTransaction_SportsMatch foreign key (match_id) references SportsMatch
+		fan_id varchar(20),
+		constraint PK_TicketTransaction primary key (transaction_id),
+		constraint FK_TicketTransaction_Ticket foreign key (ticket_id) references Ticket,
+		constraint FK_TicketTransaction_SportsMatch foreign key (match_id) references SportsMatch,
 		constraint FK_TicketTransaction_Fan foreign key (fan_id) references Fan
 	);
-
-end
 -------------------------
 
 go
 
 -- Drop All Tables --
 create proc dropAllTables as
-
-begin
 
 	drop table SystemAdmin;
 	drop table Fan;
@@ -142,15 +138,23 @@ begin
 	drop table SportsMatch;
 	drop table Ticket;
 	drop table Club;
-	drop table AdminBlocksFan;
-	drop table StadiumManager;
 	drop table ClubRep;
-	drop table ClubsPlayMatch;
-	drop table ManagerRequestsRep;
+	drop table StadiumManager;
+	drop table RepRequestsStadium;
 	drop table TicketTransaction;
-
-end
 ---------------------
+
+go
+
+-- Add Assoc. Manager --
+create proc addAssociationManager
+	@name varchar(20), 
+	@username varchar(20), 
+	@password varchar(20)
+as
+	insert into AssociationManager
+	values(@username, @name, @password);
+------------------------
 
 go
 

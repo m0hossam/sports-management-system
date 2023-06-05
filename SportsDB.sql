@@ -131,17 +131,17 @@ go
 -- Drop All Tables --
 create proc dropAllTables as
 
-	drop table SystemAdmin;
-	drop table Fan;
-	drop table AssociationManager;
-	drop table Stadium;
-	drop table SportsMatch;
-	drop table Ticket;
-	drop table Club;
-	drop table ClubRep;
-	drop table StadiumManager;
-	drop table RepRequestsStadium;
 	drop table TicketTransaction;
+	drop table RepRequestsStadium;
+	drop table StadiumManager;
+	drop table Ticket;
+	drop table SportsMatch;
+	drop table ClubRep;	
+	drop table Club;
+	drop table Stadium;
+	drop table AssociationManager;
+	drop table Fan;
+	drop table SystemAdmin;
 ---------------------
 
 go
@@ -155,6 +155,43 @@ as
 	insert into AssociationManager
 	values(@username, @name, @password);
 ------------------------
+
+go
+
+-- Add Club --
+create proc addClub
+	@name varchar(20),
+	@location varchar(20)
+as
+	insert into Club(full_name, club_location)
+	values(@name, @location);
+--------------
+
+go
+
+-- Add Stadium --
+create proc addStadium
+	@name varchar(20),
+	@location varchar(20),
+	@capacity int
+as
+	insert into Stadium(full_name, stad_location, capacity)
+	values(@name, @location, @capacity);
+-----------------
+
+go
+
+-- Add Stadium Manager --
+create proc addStadiumManager
+	@name varchar(20),
+	@stad_name varchar(20),
+	@username varchar(20),
+	@password varchar(20)
+as
+	declare @stad_id int = (select stadium_id from Stadium where full_name = @stad_name);
+	insert into StadiumManager
+	values(@stad_id, @username, @password, @name);
+-------------------------
 
 go
 

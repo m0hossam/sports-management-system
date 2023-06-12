@@ -86,9 +86,7 @@ create proc createAllTables as
 	(
 		ticket_id int identity, 
 		availability_status bit, 
-		ticket_id int identity,
-		availability_status bit,
-		match_id int,
+		stadium_id int,
 		constraint PK_Ticket primary key (ticket_id),
 		constraint FK_Ticket_SportsMatch foreign key (match_id) references SportsMatch
 	);
@@ -308,58 +306,3 @@ create view allMatches as
 	inner join Club C2 on SM.away_club_id = C2.club_id
 	where SM.home_club_id = C1.club_id and SM.away_club_id = C2.club_id;
 ----------------------
-
-go
-
--- View Clubs With No Matches --
-create view clubsWithNoMatches as
-
-	select full_name
-	from Club
-	where not exists(
-	select * 
-	from SportsMatch 
-	where club_id = home_club_id or club_id = away_club_id);
---------------------------------
-
-go 
-
--- View allTicket --
-create view allTicket as
-	select S.full_name , C1.full_name, C2.full_name ,SM.start_time
-	from Ticket as T 
-	inner join SportsMatch as SM on T.match_id = SM.match_id
-	inner join Stadium as S on S.stadium_id = SM.stadium_id
-	inner join Club as C1 on SM.home_club_id = C1.club_id
-	inner join Club as C2 on SM.home_club_id = C2.club_id;
-
--------------------------
-
-go
-
--- View allClubs --
-create view allClubs as
-	select C.full_name, C.club_location
-	from Club as C;
-
--------------------------
-
-go
-
--- View allStadiums --
-create view allStadiums as
-	select S.full_name, S.stad_location, S.capacity, S.availability_status
-	from Stadium as S;
-
--------------------------	
-
-go
-
--- View allRequests --
-create view allRequests as
-	select CR.full_name, R.is_approved, SM.full_name
-	from RepRequestsStadium as R
-	inner join ClubRep as CR on CR.club_rep_id=R.club_rep_id
-	inner join StadiumManager as SM on R.stadium_manager_id=SM.stadium_manager_id
-
--------------------------	

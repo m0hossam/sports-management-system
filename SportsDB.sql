@@ -67,9 +67,9 @@ create proc createAllTables as
 
 	create table SportsMatch
 	(
-		match_id int identity,
-		start_time datetime,
-		end_time as start_time + '02:00:00',
+		match_id int identity, 
+		start_time datetime, 
+		end_time datetime, 
 		attendes_number int,
 		home_club_id int,
 		away_club_id int,
@@ -86,7 +86,7 @@ create proc createAllTables as
 	(
 		ticket_id int identity, 
 		availability_status bit, 
-		stadium_id int,
+		match_id int,
 		constraint PK_Ticket primary key (ticket_id),
 		constraint FK_Ticket_SportsMatch foreign key (match_id) references SportsMatch
 	);
@@ -95,8 +95,8 @@ create proc createAllTables as
 	(
 		stadium_manager_id int identity,
 		stadium_id int,
-		username varchar(20),
-		pass varchar(20),
+		username varchar(20), 
+		pass varchar(20), 
 		full_name varchar(20),
 		constraint PK_StadiumManager primary key (stadium_manager_id),
 		constraint FK_StadiumManager_Stadium foreign key (stadium_id) references Stadium
@@ -105,12 +105,12 @@ create proc createAllTables as
 	create table RepRequestsStadium
 	(
 		request_id int identity,
-		club_rep_id int,
-		stadium_id int,
+		club_rep_id int, 
+		stadium_manager_id int, 
 		is_approved bit,
 		constraint PK_RepRequestsStadium primary key (request_id),
 		constraint FK_RepRequestsStadium_ClubRep foreign key (club_rep_id) references ClubRep,
-		constraint FK_RepRequestsStadium_Stadium foreign key (stadium_id) references Stadium
+		constraint FK_RepRequestsStadium_StadiumManager foreign key (stadium_manager_id) references StadiumManager
 	);
 
 	create table TicketTransaction
@@ -146,57 +146,6 @@ create proc dropAllTables as
 
 go
 
--- Clear All Tables --
-create proc clearAllTables as
-	
-	-- Drop FKs first --
-	alter table TicketTransaction drop constraint FK_TicketTransaction_Fan;
-	alter table TicketTransaction drop constraint FK_TicketTransaction_SportsMatch;
-	alter table TicketTransaction drop constraint FK_TicketTransaction_Ticket;
-	alter table RepRequestsStadium drop constraint FK_RepRequestsStadium_Stadium;
-	alter table RepRequestsStadium drop constraint FK_RepRequestsStadium_ClubRep;
-	alter table StadiumManager drop constraint FK_StadiumManager_Stadium;
-	alter table Ticket drop constraint FK_Ticket_SportsMatch;
-	alter table SportsMatch drop constraint FK_SportsMatch_Stadium;
-	alter table SportsMatch drop constraint FK_SportsMatch_HomeClub;
-	alter table SportsMatch drop constraint FK_SportsMatch_AwayClub;
-	alter table SportsMatch drop constraint FK_SportsMatch_AssociationManager;
-	alter table ClubRep drop constraint FK_ClubRep_Club;	
-	alter table Club drop constraint FK_Club_SystemAdmin;
-	alter table Stadium drop constraint FK_Stadium_SystemAdmin;
-
-	-- Clear tables --
-	truncate table TicketTransaction;
-	truncate table RepRequestsStadium;
-	truncate table StadiumManager;
-	truncate table Ticket;
-	truncate table SportsMatch;
-	truncate table ClubRep;	
-	truncate table Club;
-	truncate table Stadium;
-	truncate table AssociationManager;
-	truncate table Fan;
-	truncate table SystemAdmin;
-
-	-- Add FKs again --
-	alter table TicketTransaction add constraint FK_TicketTransaction_Fan foreign key (fan_id) references Fan;
-	alter table TicketTransaction add constraint FK_TicketTransaction_SportsMatch foreign key (match_id) references SportsMatch;
-	alter table TicketTransaction add constraint FK_TicketTransaction_Ticket foreign key (ticket_id) references Ticket;
-	alter table RepRequestsStadium add constraint FK_RepRequestsStadium_Stadium foreign key (stadium_id) references Stadium;
-	alter table RepRequestsStadium add constraint FK_RepRequestsStadium_ClubRep foreign key (club_rep_id) references ClubRep;
-	alter table StadiumManager add constraint FK_StadiumManager_Stadium foreign key (stadium_id) references Stadium;
-	alter table Ticket add constraint FK_Ticket_SportsMatch foreign key (match_id) references SportsMatch;
-	alter table SportsMatch add constraint FK_SportsMatch_HomeClub foreign key (home_club_id) references Club;
-	alter table SportsMatch add constraint FK_SportsMatch_AwayClub foreign key (away_club_id) references Club;
-	alter table SportsMatch add constraint FK_SportsMatch_Stadium foreign key (stadium_id) references Stadium;
-	alter table SportsMatch add constraint FK_SportsMatch_AssociationManager foreign key (assoc_manager_username) references AssociationManager;
-	alter table ClubRep add constraint FK_ClubRep_Club foreign key (club_id) references Club;
-	alter table Club add constraint FK_Club_SystemAdmin foreign key (admin_username) references SystemAdmin;
-	alter table Stadium add constraint FK_Stadium_SystemAdmin foreign key (admin_username) references SystemAdmin;
-----------------------
-
-go
-
 -- Add Assoc. Manager --
 create proc addAssociationManager
 	@name varchar(20), 
@@ -206,21 +155,6 @@ as
 	insert into AssociationManager
 	values(@username, @name, @password);
 ------------------------
-
-go
-
--- Add Match --
-create proc addNewMatch
-	@club1 varchar(20),
-	@club2 varchar(20),
-	@host_club varchar(20),
-	@match_time datetime
-as
-	declare @host_id int = (select club_id from Club where full_name = @host_club);
-	declare @guest_id int = (select club_id from Club where club_id <> @host_id and (full_name = @club1 or full_name = @club2));
-	insert into SportsMatch(start_time, home_club_id, away_club_id)
-	values(@match_time, @host_id, @guest_id);
----------------
 
 go
 

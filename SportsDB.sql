@@ -86,9 +86,9 @@ create proc createAllTables as
 	(
 		ticket_id int identity, 
 		availability_status bit, 
-		stadium_id int,
+		match_id int,
 		constraint PK_Ticket primary key (ticket_id),
-		constraint FK_Ticket_Stadium foreign key (stadium_id) references Stadium
+		constraint FK_Ticket_SportsMatch foreign key (match_id) references SportsMatch
 	);
 
 	create table StadiumManager
@@ -208,7 +208,7 @@ go
 create view allClubRepresentatives as
 
 	select CR.username, CR.full_name, C.full_name as club_name
-	from ClubRep CR inner join Club on CR.club_id = C.club_id;
+	from ClubRep CR inner join Club C on CR.club_id = C.club_id;
 -------------------------
 
 go

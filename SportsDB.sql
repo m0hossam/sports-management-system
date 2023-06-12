@@ -84,9 +84,9 @@ create proc createAllTables as
 
 	create table Ticket
 	(
-		ticket_id int identity,
-		availability_status bit,
-		match_id int,
+		ticket_id int identity, 
+		availability_status bit, 
+		stadium_id int,
 		constraint PK_Ticket primary key (ticket_id),
 		constraint FK_Ticket_SportsMatch foreign key (match_id) references SportsMatch
 	);
@@ -274,7 +274,7 @@ go
 create view allClubRepresentatives as
 
 	select CR.username, CR.full_name, C.full_name as club_name
-	from ClubRep CR inner join Club on CR.club_id = C.club_id;
+	from ClubRep CR inner join Club C on CR.club_id = C.club_id;
 -------------------------
 
 go
@@ -306,16 +306,3 @@ create view allMatches as
 	inner join Club C2 on SM.away_club_id = C2.club_id
 	where SM.home_club_id = C1.club_id and SM.away_club_id = C2.club_id;
 ----------------------
-
-go
-
--- View Clubs With No Matches --
-create view clubsWithNoMatches as
-
-	select full_name
-	from Club
-	where not exists(
-	select * 
-	from SportsMatch 
-	where club_id = home_club_id or club_id = away_club_id);
---------------------------------

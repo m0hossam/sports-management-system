@@ -406,3 +406,13 @@ as
 		where C1.full_name = @host_club and SM.stadium_id is null
 	);
 -----------------------------
+
+go
+
+-- View matchesPerTeam --
+create view matchesPerTeam as
+	select C.full_name, count(DISTINCT SM.match_id)
+	from club as C 
+	inner join SportsMatch as SM on (SM.home_club_id =C.club_id or  SM.away_club_id =C.club_id) and SM.end_time <GETDATE() ; -- and match has already played -> end time ?--
+
+-------------------------

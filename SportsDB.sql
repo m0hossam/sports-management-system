@@ -1,11 +1,12 @@
-﻿﻿-- Sports Management System --
+﻿﻿﻿-- Sports Management System --
 
 /* Updates:
--Added & tested viewAvailableStadiumsOn function
--Added & tested allUnassignedMatches function
+-Added clubsNeverPlayed function
 */
 
-go
+go 
+
+-- PROCEDURES ######################################################################################
 
 -- Create All Tables --
 create proc createAllTables as
@@ -265,7 +266,9 @@ as
 	values(@stad_id, @username, @password, @name);
 -------------------------
 
-go
+go 
+
+-- VIEWS ###########################################################################################
 
 -- View All Assoc. Managers --
 create view allAssocManager as
@@ -316,7 +319,7 @@ create view allMatches as
 go
 
 -- View All Tickets --
-create view allTicket as
+create view allTickets as
 
 	select S.full_name , C1.full_name, C2.full_name ,SM.start_time
 	from Ticket as T 
@@ -372,7 +375,19 @@ create view clubsWithNoMatches as
 
 go
 
--- View Available Stadiums On Date --
+-- View No. Of Matches Played Per Team --
+create view matchesPerTeam as
+
+	select C.full_name, count(DISTINCT SM.match_id)
+	from Club as C 
+	inner join SportsMatch as SM on (SM.home_club_id = C.club_id or SM.away_club_id = C.club_id) and SM.end_time < GETDATE() ; -- and match has already played -> end time ?--
+-------------------------
+
+go
+
+-- FUNCTIONS #######################################################################################
+
+-- Return Available Stadiums On Date --
 create function viewAvailableStadiumsOn(@start_time datetime)
 	returns table
 as
@@ -393,7 +408,7 @@ as
 
 go
 
--- View Unassigned Matches --
+-- Return Unassigned Matches --
 create function allUnassignedMatches(@host_club varchar(20))
 	returns table
 as
@@ -409,10 +424,32 @@ as
 
 go
 
--- View matchesPerTeam --
-create view matchesPerTeam as
-	select C.full_name, count(DISTINCT SM.match_id)
-	from club as C 
-	inner join SportsMatch as SM on (SM.home_club_id =C.club_id or  SM.away_club_id =C.club_id) and SM.end_time <GETDATE() ; -- and match has already played -> end time ?--
+-- Returns Clubs That Never Played Given Club --
+create function clubsNeverPlayed(@given_club_name varchar(20))
+	returns @clubs table(club_name varchar(20))
+as
+begin
+	declare @given_club_id int = (
+		select club_id
+		from Club
+		where full_name = @given_club_name
+	)
+	insert into @clubs
+	select full_name
+	from Club
+	where club_id not in(
+		select away_club_id
+		from SportsMatch
+		where home_club_id = @given_club_id
+	)
+	and club_id not in(
+		select home_club_id
+		from SportsMatch
+		where away_club_id = @given_club_id
+	)
+	and club_id <> @given_club_id
+	return
+end
+------------------------------------------------
 
--------------------------
+

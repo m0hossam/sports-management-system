@@ -1,7 +1,8 @@
 ﻿﻿﻿-- Sports Management System --
 
 /* Updates:
--Added clubsNeverPlayed function
+-Fixed minor bug in matchesPerTeam view
+-Added clubsNeverMatched view
 */
 
 go 
@@ -378,10 +379,27 @@ go
 -- View No. Of Matches Played Per Team --
 create view matchesPerTeam as
 
-	select C.full_name, count(DISTINCT SM.match_id)
+	select C.full_name, count(DISTINCT SM.match_id) as num_matches
 	from Club as C 
-	inner join SportsMatch as SM on (SM.home_club_id = C.club_id or SM.away_club_id = C.club_id) and SM.end_time < GETDATE() ; -- and match has already played -> end time ?--
--------------------------
+	left join SportsMatch as SM on (SM.home_club_id = C.club_id or SM.away_club_id = C.club_id) and SM.end_time < GETDATE() -- and match has already played -> end time ?--
+	group by C.full_name;
+-----------------------------------------
+
+go
+
+-- View Club Pairs Never Matched --
+create view clubsNeverMatched as
+
+	select C1.full_name first_club, C2.full_name second_club
+	from Club C1
+	inner join Club C2 on C1.club_id > C2.club_id -- The (>) eliminates unordered duplicates
+	where not exists(
+		select *
+		from SportsMatch SM
+		where (SM.home_club_id = C1.club_id and SM.away_club_id = C2.club_id) 
+		or (SM.home_club_id = C2.club_id and SM.away_club_id = C1.club_id)
+	);
+-----------------------------------
 
 go
 

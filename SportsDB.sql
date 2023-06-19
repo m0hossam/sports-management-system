@@ -1,8 +1,10 @@
-﻿﻿﻿-- Sports Management System --
+﻿﻿﻿﻿-- Sports Management System --
 
 /* Updates:
--Fixed minor bug in matchesPerTeam view
--Added clubsNeverMatched view
+- Renamed RepRequestsStadium table to HostRequest
+- Added match_id in HostRequest table and its FK constraint
+- Added addHostRequest procedure
+- Added acceptRequest procedure
 */
 
 go 
@@ -110,15 +112,17 @@ create proc createAllTables as
 		constraint FK_StadiumManager_Stadium foreign key (stadium_id) references Stadium
 	);
 
-	create table RepRequestsStadium
+	create table HostRequest
 	(
 		request_id int identity,
 		club_rep_id int,
 		stadium_id int,
+		match_id int,
 		is_approved bit,
-		constraint PK_RepRequestsStadium primary key (request_id),
-		constraint FK_RepRequestsStadium_ClubRep foreign key (club_rep_id) references ClubRep,
-		constraint FK_RepRequestsStadium_Stadium foreign key (stadium_id) references Stadium
+		constraint PK_HostRequest primary key (request_id),
+		constraint FK_HostRequest_ClubRep foreign key (club_rep_id) references ClubRep,
+		constraint FK_HostRequest_Stadium foreign key (stadium_id) references Stadium,
+		constraint FK_HostRequest_SportsMatch foreign key (match_id) references SportsMatch
 	);
 
 	create table TicketTransaction
@@ -140,7 +144,7 @@ go
 create proc dropAllTables as
 
 	drop table TicketTransaction;
-	drop table RepRequestsStadium;
+	drop table HostRequest;
 	drop table StadiumManager;
 	drop table Ticket;
 	drop table SportsMatch;
@@ -161,8 +165,8 @@ create proc clearAllTables as
 	alter table TicketTransaction drop constraint FK_TicketTransaction_Fan;
 	alter table TicketTransaction drop constraint FK_TicketTransaction_SportsMatch;
 	alter table TicketTransaction drop constraint FK_TicketTransaction_Ticket;
-	alter table RepRequestsStadium drop constraint FK_RepRequestsStadium_Stadium;
-	alter table RepRequestsStadium drop constraint FK_RepRequestsStadium_ClubRep;
+	alter table HostRequest drop constraint FK_HostRequest_Stadium;
+	alter table HostRequest drop constraint FK_HostRequest_ClubRep;
 	alter table StadiumManager drop constraint FK_StadiumManager_Stadium;
 	alter table Ticket drop constraint FK_Ticket_SportsMatch;
 	alter table SportsMatch drop constraint FK_SportsMatch_Stadium;
@@ -175,7 +179,7 @@ create proc clearAllTables as
 
 	-- Clear tables --
 	truncate table TicketTransaction;
-	truncate table RepRequestsStadium;
+	truncate table HostRequest;
 	truncate table StadiumManager;
 	truncate table Ticket;
 	truncate table SportsMatch;
@@ -190,8 +194,8 @@ create proc clearAllTables as
 	alter table TicketTransaction add constraint FK_TicketTransaction_Fan foreign key (fan_id) references Fan;
 	alter table TicketTransaction add constraint FK_TicketTransaction_SportsMatch foreign key (match_id) references SportsMatch;
 	alter table TicketTransaction add constraint FK_TicketTransaction_Ticket foreign key (ticket_id) references Ticket;
-	alter table RepRequestsStadium add constraint FK_RepRequestsStadium_Stadium foreign key (stadium_id) references Stadium;
-	alter table RepRequestsStadium add constraint FK_RepRequestsStadium_ClubRep foreign key (club_rep_id) references ClubRep;
+	alter table HostRequest add constraint FK_HostRequest_Stadium foreign key (stadium_id) references Stadium;
+	alter table HostRequest add constraint FK_HostRequest_ClubRep foreign key (club_rep_id) references ClubRep;
 	alter table StadiumManager add constraint FK_StadiumManager_Stadium foreign key (stadium_id) references Stadium;
 	alter table Ticket add constraint FK_Ticket_SportsMatch foreign key (match_id) references SportsMatch;
 	alter table SportsMatch add constraint FK_SportsMatch_HomeClub foreign key (home_club_id) references Club;
@@ -268,6 +272,45 @@ as
 -------------------------
 
 go 
+
+-- Add Host Request --
+create proc addHostRequest
+	@club_name varchar(20),
+	@stadium_name varchar(20),
+	@start_time datetime
+as
+	declare @host_id int = (select club_id from Club where full_name = @club_name);
+	declare @club_rep_id int = (select club_rep_id from ClubRep where club_id = @host_id);
+	declare @stadium_id int = (
+		select S.stadium_id
+		from Stadium S
+		inner join StadiumManager SM on S.stadium_id = SM.stadium_manager_id
+		where S.full_name = @stadium_name
+	);
+	declare @match_id int = (select * from SportsMatch where home_club_id = @host_id and start_time = @start_time);
+	insert into HostRequest(club_rep_id, stadium_id, match_id)
+	values(@club_rep_id, @stadium_id, @match_id);
+----------------------
+
+go
+
+-- Accept Host Request --
+create proc acceptRequest
+	@stad_manager_name varchar(20),
+	@host_club_name varchar(20),
+	@guest_club_name varchar(20),
+	@start_time datetime
+as
+	declare @host_id int = (select club_id from Club where full_name = @host_club_name);
+	declare @guest_id int = (select club_id from Club where full_name = @guest_club_name);
+	declare @match_id int = (select match_id from SportsMatch where home_club_id = @host_id and away_club_id = @guest_id and start_time = @start_time);
+	declare @request_id int = (select request_id from HostRequest where match_id = @match_id);
+	declare @stadium_id int = (select stadium_id from HostRequest where request_id = @request_id);
+	update HostRequest set is_approved = 1 where request_id = @request_id;
+	update SportsMatch set stadium_id = @stadium_id where match_id = @match_id;
+-------------------------
+
+go
 
 -- VIEWS ###########################################################################################
 
@@ -354,7 +397,7 @@ go
 create view allRequests as
 
 	select CR.full_name, R.is_approved, SM.full_name
-	from RepRequestsStadium as R
+	from HostRequest as R
 	inner join ClubRep as CR on CR.club_rep_id=R.club_rep_id
 	inner join StadiumManager as SM on R.stadium_manager_id=SM.stadium_manager_id
 -------------------------
@@ -469,5 +512,4 @@ begin
 	return
 end
 ------------------------------------------------
-
 

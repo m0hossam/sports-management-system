@@ -1,10 +1,10 @@
 ﻿﻿﻿﻿-- Sports Management System --
 
 /* Updates:
-- Renamed RepRequestsStadium table to HostRequest
-- Added match_id in HostRequest table and its FK constraint
-- Added addHostRequest procedure
-- Added acceptRequest procedure
+- Altered FKs that referenced SportsMatch to delete on cascade in Ticket, HostRequest, TicketTransaction
+- Added dropAllProceduresFunctionsViews procedure
+- Added deleteMatchesOnStadium procedure
+- Added a TODO list at the bottom of this file
 */
 
 go 
@@ -83,7 +83,7 @@ create proc createAllTables as
 		attendes_number int,
 		home_club_id int,
 		away_club_id int,
-		stadium_id int, 
+		stadium_id int,
 		assoc_manager_username varchar(20),
 		constraint PK_SportsMatch primary key (match_id),
 		constraint FK_SportsMatch_HomeClub foreign key (home_club_id) references Club,
@@ -98,7 +98,7 @@ create proc createAllTables as
 		availability_status bit,
 		match_id int,
 		constraint PK_Ticket primary key (ticket_id),
-		constraint FK_Ticket_SportsMatch foreign key (match_id) references SportsMatch
+		constraint FK_Ticket_SportsMatch foreign key (match_id) references SportsMatch on delete cascade
 	);
 
 	create table StadiumManager
@@ -122,7 +122,7 @@ create proc createAllTables as
 		constraint PK_HostRequest primary key (request_id),
 		constraint FK_HostRequest_ClubRep foreign key (club_rep_id) references ClubRep,
 		constraint FK_HostRequest_Stadium foreign key (stadium_id) references Stadium,
-		constraint FK_HostRequest_SportsMatch foreign key (match_id) references SportsMatch
+		constraint FK_HostRequest_SportsMatch foreign key (match_id) references SportsMatch on delete cascade
 	);
 
 	create table TicketTransaction
@@ -133,7 +133,7 @@ create proc createAllTables as
 		fan_id varchar(20),
 		constraint PK_TicketTransaction primary key (transaction_id),
 		constraint FK_TicketTransaction_Ticket foreign key (ticket_id) references Ticket,
-		constraint FK_TicketTransaction_SportsMatch foreign key (match_id) references SportsMatch,
+		constraint FK_TicketTransaction_SportsMatch foreign key (match_id) references SportsMatch on delete cascade,
 		constraint FK_TicketTransaction_Fan foreign key (fan_id) references Fan
 	);
 -------------------------
@@ -155,6 +155,41 @@ create proc dropAllTables as
 	drop table Fan;
 	drop table SystemAdmin;
 ---------------------
+
+go
+
+-- Drop All Procedures/Functions/Views --
+create proc dropAllProceduresFunctionsViews as
+
+	drop proc createAllTables;
+	drop proc dropAllTables;
+	drop proc clearAllTables;
+	drop proc addAssociationManager; 
+	drop proc addNewMatch;
+	drop proc addClub;
+	drop proc addStadium;
+	drop proc addStadiumManager;
+	drop proc addHostRequest;
+	drop proc acceptRequest;
+	drop proc deleteMatchesOnStadium;
+
+	drop view allAssocManager;
+	drop view allClubRepresentatives;
+	drop view allStadiumManagers;
+	drop view allFans;
+	drop view allMatches;
+	drop view allTickets;
+	drop view allClubs;
+	drop view allStadiums;
+	drop view allRequests;
+	drop view clubsWithNoMatches;
+	drop view matchesPerTeam;
+	drop view clubsNeverMatched;
+
+	drop function viewAvailableStadiumsOn;
+	drop function allUnassignedMatches;
+	drop function clubsNeverPlayed;
+-----------------------------------------
 
 go
 
@@ -309,6 +344,21 @@ as
 	update HostRequest set is_approved = 1 where request_id = @request_id;
 	update SportsMatch set stadium_id = @stadium_id where match_id = @match_id;
 -------------------------
+
+go
+
+-- Delete Matches On Stadium --
+create proc deleteMatchesOnStadium
+	@stad_name varchar(20)
+as
+	delete from SportsMatch where match_id in 
+	(
+		select SM.match_id
+		from SportsMatch SM
+		inner join Stadium S on SM.stadium_id = S.stadium_id
+		where S.full_name = @stad_name and SM.start_time > GETDATE()
+	);
+-------------------------------
 
 go
 
@@ -513,3 +563,31 @@ begin
 end
 ------------------------------------------------
 
+/* TODO :
+
+Procedures(13):
+
+c incomplete
+iv
+v
+vii
+viii
+x
+xi
+xii
+xiii
+xx
+xxi
+xxiv
+xxv
+
+Functions(6):
+
+xviii
+xxii
+xxiii
+xxx
+xxxi
+xxxii
+
+*/

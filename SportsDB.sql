@@ -1,10 +1,7 @@
 ﻿﻿﻿﻿-- Sports Management System --
-
+-- SportsSystemDB --
 /* Updates:
-- Altered FKs that referenced SportsMatch to delete on cascade in Ticket, HostRequest, TicketTransaction
-- Added dropAllProceduresFunctionsViews procedure
-- Added deleteMatchesOnStadium procedure
-- Added a TODO list at the bottom of this file
+- Added addTicket procedure (tested)
 */
 
 go 
@@ -172,6 +169,7 @@ create proc dropAllProceduresFunctionsViews as
 	drop proc addHostRequest;
 	drop proc acceptRequest;
 	drop proc deleteMatchesOnStadium;
+	drop proc addTicket;
 
 	drop view allAssocManager;
 	drop view allClubRepresentatives;
@@ -358,6 +356,20 @@ as
 		inner join Stadium S on SM.stadium_id = S.stadium_id
 		where S.full_name = @stad_name and SM.start_time > GETDATE()
 	);
+-------------------------------
+
+go
+
+-- Add Ticket --
+create proc addTicket
+	@host_clup_name varchar(20),
+	@competing_club_name varchar(20),
+	@start_time datetime
+as
+	declare @host_clup_id int=(select club_id from Club where full_name=@host_clup_name);
+	declare @competing_club_id int=(select club_id from Club where full_name=@competing_club_name);
+	declare @match_id int=(select SportsMatch.match_id from SportsMatch where SportsMatch.home_club_id=@host_clup_id and SportsMatch.away_club_id=@competing_club_id and SportsMatch.start_time=@start_time);
+	insert into Ticket values (1, @match_id);
 -------------------------------
 
 go
@@ -565,7 +577,7 @@ end
 
 /* TODO :
 
-Procedures(13):
+Procedures(12):
 
 c incomplete
 iv
@@ -574,7 +586,6 @@ vii
 viii
 x
 xi
-xii
 xiii
 xx
 xxi

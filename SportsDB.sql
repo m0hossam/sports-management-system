@@ -1,7 +1,11 @@
-﻿﻿﻿﻿-- Sports Management System --
+﻿-- Sports Management System --
 -- SportsSystemDB --
+
 /* Updates:
-- Added deleteMatchesOnStadium procedure
+- Removed useless WHERE clause from allMatches view
+- Added matchWithHighestAttendance function
+- Added matchesRankedByAttendance function
+- Added requestsFromClub function
 */
 
 go 
@@ -77,7 +81,7 @@ create proc createAllTables as
 		match_id int identity,
 		start_time datetime,
 		end_time as start_time + '02:00:00',
-		attendes_number int,
+		attendes_number int, --should be incremented whenever purchaseTicket is called
 		home_club_id int,
 		away_club_id int,
 		stadium_id int,
@@ -187,6 +191,9 @@ create proc dropAllProceduresFunctionsViews as
 	drop function viewAvailableStadiumsOn;
 	drop function allUnassignedMatches;
 	drop function clubsNeverPlayed;
+	drop function matchWithHighestAttendance;
+	drop function matchesRankedByAttendance;
+	drop function requestsFromClub;
 -----------------------------------------
 
 go
@@ -374,12 +381,13 @@ as
 
 go
 
--- Delete Match On Stadium -- 
+-- Delete Match On Stadium --
 create proc deleteMatchesOnStadium
 	@stad_name varchar(20)
 as
 	declare @stad_id int=(select Stadium.stadium_id from Stadium where @stad_name=Stadium.full_name);
 	delete from SportsMatch where SportsMatch.stadium_id=@stad_id and SportsMatch.start_time >= GETDATE();
+-----------------------------
 
 go
 
@@ -424,11 +432,10 @@ go
 -- View All Matches --
 create view allMatches as
 
-	select C1.full_name as first_club, C2.full_name as second_club, C1.full_name as host_club, SM.start_time
+	select C1.full_name as host_club, C2.full_name as guest_club, SM.start_time
 	from SportsMatch SM 
 	inner join Club C1 on SM.home_club_id = C1.club_id
-	inner join Club C2 on SM.away_club_id = C2.club_id
-	where SM.home_club_id = C1.club_id and SM.away_club_id = C2.club_id;
+	inner join Club C2 on SM.away_club_id = C2.club_id;
 ----------------------
 
 go
@@ -556,7 +563,7 @@ as
 
 go
 
--- Returns Clubs That Never Played Given Club --
+-- Return Clubs That Never Played Given Club --
 create function clubsNeverPlayed(@given_club_name varchar(20))
 	returns @clubs table(club_name varchar(20))
 as
@@ -584,6 +591,58 @@ begin
 end
 ------------------------------------------------
 
+go
+
+-- Return Match With Highest Attendance --
+create function matchWithHighestAttendance()
+	returns table
+as
+	return
+	(
+		select top 1 C1.full_name as host_club, C2.full_name as guest_club, attendes_number
+		from SportsMatch SM 
+		inner join Club C1 on SM.home_club_id = C1.club_id
+		inner join Club C2 on SM.away_club_id = C2.club_id
+		order by attendes_number desc
+	);
+------------------------------------------
+
+go
+
+-- Return Matches Ranked Desc. By Attendance --
+create function matchesRankedByAttendance()
+	returns table
+as
+	return 
+	(
+		select C1.full_name as host_club, C2.full_name as guest_club, attendes_number
+		from SportsMatch SM 
+		inner join Club C1 on SM.home_club_id = C1.club_id
+		inner join Club C2 on SM.away_club_id = C2.club_id
+		where GETDATE() > SM.end_time
+		order by attendes_number desc
+	);
+------------------------------------------
+
+go
+
+-- Return Club Requests On Stadium --
+create function requestsFromClub(@stadium_name varchar(20), @host_name varchar(20))
+	returns table
+as	
+	return
+	(
+		select C1.full_name as host_club, C2.full_name as guest_club
+		from Club C1
+		inner join SportsMatch SM on SM.home_club_id = C1.club_id
+		inner join Club C2 on SM.away_club_id = C2.club_id
+		inner join HostRequest HR on HR.match_id = SM.match_id
+		where C1.full_name = @host_name
+		and HR.stadium_id = (select stadium_id from Stadium where full_name = @stadium_name)
+		and HR.club_rep_id = (select club_rep_id from ClubRep where club_id = C1.club_id)
+	);
+-------------------------------------
+
 /* TODO :
 
 Procedures(11):
@@ -600,13 +659,10 @@ xxi
 xxiv
 xxv
 
-Functions(6):
+Functions(3):
 
 xviii
 xxii
 xxiii
-xxx
-xxxi
-xxxii
 
 */

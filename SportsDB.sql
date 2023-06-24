@@ -1,7 +1,7 @@
 ﻿﻿﻿﻿-- Sports Management System --
 -- SportsSystemDB --
 /* Updates:
-- Added addTicket procedure (tested)
+- Added deleteMatchesOnStadium procedure
 */
 
 go 
@@ -374,6 +374,15 @@ as
 
 go
 
+-- Delete Match On Stadium -- 
+create proc deleteMatchesOnStadium
+	@stad_name varchar(20)
+as
+	declare @stad_id int=(select Stadium.stadium_id from Stadium where @stad_name=Stadium.full_name);
+	delete from SportsMatch where SportsMatch.stadium_id=@stad_id and SportsMatch.start_time >= GETDATE();
+
+go
+
 -- VIEWS ###########################################################################################
 
 -- View All Assoc. Managers --
@@ -577,11 +586,10 @@ end
 
 /* TODO :
 
-Procedures(12):
+Procedures(11):
 
 c incomplete
 iv
-v
 vii
 viii
 x

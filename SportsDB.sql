@@ -2,10 +2,7 @@
 -- SportsSystemDB --
 
 /* Updates:
-- Removed useless WHERE clause from allMatches view
-- Added matchWithHighestAttendance function
-- Added matchesRankedByAttendance function
-- Added requestsFromClub function
+-Added 	Delete Match proc.
 */
 
 go 
@@ -388,6 +385,19 @@ as
 	declare @stad_id int=(select Stadium.stadium_id from Stadium where @stad_name=Stadium.full_name);
 	delete from SportsMatch where SportsMatch.stadium_id=@stad_id and SportsMatch.start_time >= GETDATE();
 -----------------------------
+go
+
+-- Delete Match --
+create proc deleteMatch
+	@first_club varchar(20),
+	@second_club varchar(20),
+	@host_club varchar(20)
+as	
+	declare @first_id int = (select club_id from Club where Club.full_name=@first_club);
+	declare @second_id int = (select club_id from Club where Club.full_name=@second_club);
+	declare @host_id int = (select club_id from Club where Club.full_name=@host_club);
+	delete from SportsMatch where ((SportsMatch.home_club_id = @first_id and SportsMatch.away_club_id = @second_id) or ( SportsMatch.home_club_id = @second_id and SportsMatch.away_club_id = @first_id)) and SportsMatch.home_club_id = @host_id;
+----------------------
 
 go
 
@@ -645,10 +655,9 @@ as
 
 /* TODO :
 
-Procedures(11):
+Procedures(10):
 
 c incomplete
-iv
 vii
 viii
 x

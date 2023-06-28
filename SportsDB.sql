@@ -2,7 +2,7 @@
 -- SportsSystemDB --
 
 /* Updates:
--Added 	Delete Match proc.
+-Added 	Delete Club. (tested)
 */
 
 go 
@@ -400,6 +400,14 @@ as
 ----------------------
 
 go
+-- Delete Club --
+create proc deleteClub 
+	@club_name varchar(20)
+as
+	delete from Club where Club.full_name=@club_name;
+----------------------
+
+go
 
 -- VIEWS ###########################################################################################
 
@@ -655,11 +663,9 @@ as
 
 /* TODO :
 
-Procedures(10):
+Procedures(7):
 
 c incomplete
-vii
-viii
 x
 xi
 xiii

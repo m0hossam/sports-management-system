@@ -2,7 +2,7 @@
 -- SportsSystemDB --
 
 /* Updates:
--Added 	Delete Club. (tested)
+-Added Delete Stadium (tested)
 */
 
 go 
@@ -408,6 +408,14 @@ as
 ----------------------
 
 go
+-- Delete Stadium --	
+create proc deleteStadium
+	@stadium_name varchar(20)
+as
+	delete from Stadium where Stadium.full_name=@stadium_name;
+----------------------
+
+go
 
 -- VIEWS ###########################################################################################
 
@@ -663,10 +671,9 @@ as
 
 /* TODO :
 
-Procedures(7):
+Procedures(6):
 
 c incomplete
-x
 xi
 xiii
 xx

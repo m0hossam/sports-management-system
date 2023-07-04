@@ -3,6 +3,7 @@
 
 /* Updates:
 -Added blockFan (tested)
+-Added addRepresentative (tested)
 */
 
 go 
@@ -427,6 +428,19 @@ as
 
 go
 
+-- Add Representative --
+create proc addRepresentative
+	@full_name varchar(20),
+	@club_name varchar(20),
+	@user_name varchar(20),
+	@pass varchar(20)
+as
+	declare @club_id int= (select Club.club_id from Club where Club.full_name=@club_name);
+	insert into ClubRep values (@club_id, @user_name, @pass, @full_name);
+----------------------
+
+go
+
 -- VIEWS ###########################################################################################
 
 -- View All Assoc. Managers --
@@ -682,10 +696,9 @@ as
 
 /* TODO :
 
-Procedures(5):
+Procedures(4):
 
 c incomplete
-xiii
 xx
 xxi
 xxiv

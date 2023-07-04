@@ -28,7 +28,7 @@ create proc createAllTables as
 		phone varchar(20), 
 		full_address varchar(20),
 		birth_date date,
-		fan_status bit,
+		is_blocked bit,
 		constraint PK_Fan primary key (national_id)
 	);
 
@@ -449,7 +449,7 @@ go
 -- View All Fans --
 create view allFans as
 	
-	select full_name, national_id, birth_date, fan_status 
+	select full_name, national_id, birth_date, is_blocked 
 	from Fan;
 -------------------
 

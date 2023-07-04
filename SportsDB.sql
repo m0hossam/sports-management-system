@@ -2,7 +2,7 @@
 -- SportsSystemDB --
 
 /* Updates:
--Added Delete Stadium (tested)
+-Added blockFan (tested)
 */
 
 go 
@@ -171,6 +171,7 @@ create proc dropAllProceduresFunctionsViews as
 	drop proc acceptRequest;
 	drop proc deleteMatchesOnStadium;
 	drop proc addTicket;
+	drop proc blockFan;
 
 	drop view allAssocManager;
 	drop view allClubRepresentatives;
@@ -417,6 +418,15 @@ as
 
 go
 
+-- Block Fan --
+create proc blockFan
+	@national_id varchar(20)
+as 
+	update Fan set Fan.fan_status=1 where Fan.national_id=@national_id;
+----------------------
+
+go
+
 -- VIEWS ###########################################################################################
 
 -- View All Assoc. Managers --
@@ -550,6 +560,7 @@ create view clubsNeverMatched as
 
 go
 
+
 -- FUNCTIONS #######################################################################################
 
 -- Return Available Stadiums On Date --
@@ -671,10 +682,9 @@ as
 
 /* TODO :
 
-Procedures(6):
+Procedures(5):
 
 c incomplete
-xi
 xiii
 xx
 xxi

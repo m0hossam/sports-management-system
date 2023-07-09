@@ -2,8 +2,8 @@
 -- SportsSystemDB --
 
 /* Updates:
--Added blockFan (tested)
--Added addRepresentative (tested)
+-rejectRequest added
+-add fan added but there is a problem with fan's username and pass
 */
 
 go 
@@ -173,6 +173,8 @@ create proc dropAllProceduresFunctionsViews as
 	drop proc deleteMatchesOnStadium;
 	drop proc addTicket;
 	drop proc blockFan;
+	drop proc rejectRequest;
+	drop proc addFan;
 
 	drop view allAssocManager;
 	drop view allClubRepresentatives;
@@ -440,6 +442,33 @@ as
 ----------------------
 
 go
+	
+-- Reject Request --
+create proc rejectRequest
+	@stadium_manager_name varchar(20),
+	@host_club_name varchar(20),
+	@opp_club_name varchar(20),
+	@start_time datetime
+as
+	declare @host_club_id int=(select club.club_id from Club where club.full_name=@host_club_name);
+	declare @opp_club_id int=(select club.club_id from Club where club.full_name=@opp_club_name);
+	declare @match_id int=(select SportsMatch.match_id from SportsMatch where SportsMatch.home_club_id=@host_club_id and SportsMatch.away_club_id=@opp_club_id and SportsMatch.start_time=@start_time);
+	update HostRequest set HostRequest.is_approved=0 where HostRequest.match_id=@match_id;
+----------------------
+
+go
+	
+-- Add Fan --
+create proc addFan
+	@fan_name varchar(20),
+	@national_id varchar(20),
+	@start_time datetime,
+	@address varchar(20),
+	@phon_num int
+as
+	insert into Fan (national_id, full_name , phone , full_address , birth_date , is_blocked  ) values (@national_id, @fan_name,@phon_num, @address,@start_time, 0  );
+
+go
 
 -- VIEWS ###########################################################################################
 
@@ -696,11 +725,9 @@ as
 
 /* TODO :
 
-Procedures(4):
+Procedures(2):
 
 c incomplete
-xx
-xxi
 xxiv
 xxv
 

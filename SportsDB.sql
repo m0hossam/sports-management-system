@@ -2,7 +2,7 @@
 -- SportsSystemDB --
 
 /* Updates:
--Purchase Ticket Added 
+-Update MatchHost Added and tested
 */
 
 go 
@@ -489,6 +489,23 @@ create proc addFan
 as
 	insert into Fan (national_id, full_name , phone , full_address , birth_date , is_blocked  ) values (@national_id, @fan_name,@phon_num, @address,@start_time, 0  );
 
+
+go
+
+-- Update MatchHost --	
+create proc updateMatchHost
+	@host_club_name varchar(20),
+	@opp_club_name varchar(20),
+	@start_time datetime
+as
+	declare @host_club_id int=(select club.club_id from Club where club.full_name=@host_club_name);
+	declare @opp_club_id int=(select club.club_id from Club where club.full_name=@opp_club_name);
+	declare @match_id int=(select SportsMatch.match_id from SportsMatch where SportsMatch.home_club_id=@host_club_id and SportsMatch.away_club_id=@opp_club_id and SportsMatch.start_time=@start_time);
+
+	update SportsMatch set home_club_id=@opp_club_id where SportsMatch.match_id=@match_id;
+	update SportsMatch set away_club_id=@host_club_id where SportsMatch.match_id=@match_id;
+----------------------
+
 go
 
 -- VIEWS ###########################################################################################
@@ -745,11 +762,6 @@ as
 -------------------------------------
 
 /* TODO :
-
-Procedures(1):
-
-c incomplete
-xxv
 
 Functions(3):
 

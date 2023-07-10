@@ -2,8 +2,7 @@
 -- SportsSystemDB --
 
 /* Updates:
--rejectRequest added
--add fan added but there is a problem with fan's username and pass
+-Purchase Ticket Added 
 */
 
 go 
@@ -175,6 +174,7 @@ create proc dropAllProceduresFunctionsViews as
 	drop proc blockFan;
 	drop proc rejectRequest;
 	drop proc addFan;
+	drop view purchaseTicket;
 
 	drop view allAssocManager;
 	drop view allClubRepresentatives;
@@ -188,6 +188,7 @@ create proc dropAllProceduresFunctionsViews as
 	drop view clubsWithNoMatches;
 	drop view matchesPerTeam;
 	drop view clubsNeverMatched;
+	
 
 	drop function viewAvailableStadiumsOn;
 	drop function allUnassignedMatches;
@@ -454,6 +455,26 @@ as
 	declare @opp_club_id int=(select club.club_id from Club where club.full_name=@opp_club_name);
 	declare @match_id int=(select SportsMatch.match_id from SportsMatch where SportsMatch.home_club_id=@host_club_id and SportsMatch.away_club_id=@opp_club_id and SportsMatch.start_time=@start_time);
 	update HostRequest set HostRequest.is_approved=0 where HostRequest.match_id=@match_id;
+----------------------
+
+go
+
+-- Purchase Ticket --	
+create proc purchaseTicket
+	@nationla_id int,
+	@host_club_name varchar(20),
+	@opp_club_name varchar(20),
+	@start_time datetime	
+as
+	
+	declare @host_club_id int=(select club.club_id from Club where club.full_name=@host_club_name);
+	declare @opp_club_id int=(select club.club_id from Club where club.full_name=@opp_club_name);
+	declare @match_id int=(select SportsMatch.match_id from SportsMatch where SportsMatch.home_club_id=@host_club_id and SportsMatch.away_club_id=@opp_club_id and SportsMatch.start_time=@start_time);
+	declare @attendes_number int=(select SportsMatch.attendes_number from SportsMatch where SportsMatch.match_id=@match_id);
+	declare @ticket_id int=(select ticket.ticket_id from Ticket where Ticket.match_id=@match_id);
+
+	update SportsMatch set attendes_number=@attendes_number+1 where SportsMatch.match_id=@match_id;
+	insert into TicketTransaction values(@ticket_id, @match_id, @nationla_id); 
 ----------------------
 
 go
@@ -725,10 +746,9 @@ as
 
 /* TODO :
 
-Procedures(2):
+Procedures(1):
 
 c incomplete
-xxiv
 xxv
 
 Functions(3):

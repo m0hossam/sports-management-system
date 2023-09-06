@@ -36,5 +36,7 @@ namespace SportsWebApp.Data
 
         public DbSet<SportsWebApp.Models.TicketTransaction> TicketTransaction { get; set; } = default!;
 
+        public DbSet<SportsWebApp.Models.Dummy> Dummy { get; set; } = default!;
+
     }
 }

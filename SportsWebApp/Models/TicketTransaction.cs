@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SportsWebApp.Models
 {
@@ -7,13 +7,10 @@ namespace SportsWebApp.Models
     {
         public int Id { get; set; }
 
-        [Required]
         public Ticket? Ticket { get; set; }
 
-        [Required]
         public Match? Match { get; set; }
 
-        [Required]
         public Fan? Fan { get; set; }
 
     }

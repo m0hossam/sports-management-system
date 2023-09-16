@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SportsWebApp.Models
@@ -10,7 +12,6 @@ namespace SportsWebApp.Models
         [Required] 
         public bool IsAvailable { get; set; }
 
-        [Required]
         public Match? Match { get; set; }
     }
 }

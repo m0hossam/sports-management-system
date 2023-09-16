@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsWebApp.Data;
 
 #nullable disable
 
-namespace SportsWebApp.Data.Migrations
+namespace SportsWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230916134437_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,7 +279,7 @@ namespace SportsWebApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClubId")
+                    b.Property<int?>("ClubId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -288,6 +291,8 @@ namespace SportsWebApp.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
 
                     b.HasIndex("UserId");
 
@@ -343,16 +348,16 @@ namespace SportsWebApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClubRepresentativeId")
+                    b.Property<int?>("ClubRepresentativeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MatchId")
+                    b.Property<int?>("MatchId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StadiumId")
+                    b.Property<int?>("StadiumId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -374,13 +379,16 @@ namespace SportsWebApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AwayClubId")
+                    b.Property<int?>("AwayClubId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("HomeClubId")
+                    b.Property<int?>("HomeClubId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfAttendees")
                         .HasColumnType("int");
 
                     b.Property<int?>("StadiumId")
@@ -439,7 +447,7 @@ namespace SportsWebApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StadiumId")
+                    b.Property<int?>("StadiumId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -447,6 +455,8 @@ namespace SportsWebApp.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StadiumId");
 
                     b.HasIndex("UserId");
 
@@ -487,7 +497,7 @@ namespace SportsWebApp.Data.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MatchId")
+                    b.Property<int?>("MatchId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -505,13 +515,13 @@ namespace SportsWebApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FanId")
+                    b.Property<int?>("FanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MatchId")
+                    b.Property<int?>("MatchId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TicketId")
+                    b.Property<int?>("TicketId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -589,11 +599,17 @@ namespace SportsWebApp.Data.Migrations
 
             modelBuilder.Entity("SportsWebApp.Models.ClubRepresentative", b =>
                 {
+                    b.HasOne("SportsWebApp.Models.Club", "Club")
+                        .WithMany()
+                        .HasForeignKey("ClubId");
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Club");
 
                     b.Navigation("User");
                 });
@@ -613,21 +629,15 @@ namespace SportsWebApp.Data.Migrations
                 {
                     b.HasOne("SportsWebApp.Models.ClubRepresentative", "ClubRepresentative")
                         .WithMany()
-                        .HasForeignKey("ClubRepresentativeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClubRepresentativeId");
 
                     b.HasOne("SportsWebApp.Models.Match", "Match")
                         .WithMany()
-                        .HasForeignKey("MatchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MatchId");
 
                     b.HasOne("SportsWebApp.Models.Stadium", "Stadium")
                         .WithMany()
-                        .HasForeignKey("StadiumId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StadiumId");
 
                     b.Navigation("ClubRepresentative");
 
@@ -640,15 +650,11 @@ namespace SportsWebApp.Data.Migrations
                 {
                     b.HasOne("SportsWebApp.Models.Club", "AwayClub")
                         .WithMany()
-                        .HasForeignKey("AwayClubId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AwayClubId");
 
                     b.HasOne("SportsWebApp.Models.Club", "HomeClub")
                         .WithMany()
-                        .HasForeignKey("HomeClubId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HomeClubId");
 
                     b.HasOne("SportsWebApp.Models.Stadium", "Stadium")
                         .WithMany()
@@ -663,11 +669,17 @@ namespace SportsWebApp.Data.Migrations
 
             modelBuilder.Entity("SportsWebApp.Models.StadiumManager", b =>
                 {
+                    b.HasOne("SportsWebApp.Models.Stadium", "Stadium")
+                        .WithMany()
+                        .HasForeignKey("StadiumId");
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Stadium");
 
                     b.Navigation("User");
                 });
@@ -687,9 +699,7 @@ namespace SportsWebApp.Data.Migrations
                 {
                     b.HasOne("SportsWebApp.Models.Match", "Match")
                         .WithMany()
-                        .HasForeignKey("MatchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MatchId");
 
                     b.Navigation("Match");
                 });
@@ -698,21 +708,15 @@ namespace SportsWebApp.Data.Migrations
                 {
                     b.HasOne("SportsWebApp.Models.Fan", "Fan")
                         .WithMany()
-                        .HasForeignKey("FanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FanId");
 
                     b.HasOne("SportsWebApp.Models.Match", "Match")
                         .WithMany()
-                        .HasForeignKey("MatchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MatchId");
 
                     b.HasOne("SportsWebApp.Models.Ticket", "Ticket")
                         .WithMany()
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TicketId");
 
                     b.Navigation("Fan");
 

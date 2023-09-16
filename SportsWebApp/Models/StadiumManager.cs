@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SportsWebApp.Models
@@ -10,8 +11,7 @@ namespace SportsWebApp.Models
         [Required]
         public string? Name { get; set; }
 
-        [Required]
-        public int StadiumId { get; set; }
+        public Stadium? Stadium { get; set; }
 
         [Required]
         public IdentityUser? User { get; set; }

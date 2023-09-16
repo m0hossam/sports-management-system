@@ -33,7 +33,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
 
-        public string arole;
+        public string[] RoleNames { get; set; }
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -49,6 +49,8 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
             _logger = logger;
             _roleManager = roleManager;
             _context = context;
+
+            RoleNames = _roleManager.Roles.Select(x => x.Name).ToArray();
         }
 
         /// <summary>
@@ -63,8 +65,6 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public string ReturnUrl { get; set; }
-
-        public string[] RoleNames { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -101,18 +101,35 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "User Type")]
-            public string UserType { get; set; }
+            public string UserType { get; set; } = "System Admin";
 
             [Required]
             [Display(Name = "Full Name")]
             public string Name { get; set; }
-        }
 
+            [Display(Name = "Club Name")]
+            public string ClubName { get; set; }
+
+            [Display(Name = "Stadium Name")]
+            public string StadiumName { get; set; }
+
+            [Display(Name = "National ID")]
+            public string NationalId { get; set; }
+
+            [Display(Name = "Phone Number")]
+            public string PhoneNumber {  get; set; }
+
+            [Display(Name = "Date of Birth")]
+            [DataType(DataType.Date)]
+            public DateTime? DateOfBirth { get; set; }
+
+            [Display(Name = "Address")]
+            public string Address { get; set; }
+
+        }
 
         public void OnGet(string returnUrl = null)
         {
-            RoleNames = _roleManager.Roles.Select(x => x.Name).ToArray();
-
             ReturnUrl = returnUrl;
         }
 
@@ -134,7 +151,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                     var roleResult = await _userManager.AddToRoleAsync(user, Input.UserType);
 
-                    // ----------------------- ADD SPECIFIC TYPE DATA HERE
+                    /* ----------------------- ADD SPECIFIC USER TYPE DATA HERE
                     var systemAdmin = new SystemAdmin
                     {
                         Name = Input.Name,
@@ -143,7 +160,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                     _context.SystemAdmins.Add(systemAdmin);
                     _context.SaveChanges();
-                    // -----------------------
+                    // ----------------------- */
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);

@@ -136,8 +136,53 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
+
             if (ModelState.IsValid)
             {
+                // Extra validation for user types:
+                if (Input.UserType == "Club Representative")
+                {
+                    if (Input.ClubName == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "The Club Name field is required for Club Representatives.");
+                        return Page();
+                    }
+                    else
+                    {
+                        var club = _context.Clubs.Where(x => x.Name == Input.ClubName).FirstOrDefault();
+                        if (club == null)
+                        {
+                            ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing club.");
+                            return Page();
+                        }
+                    }
+                }
+                if (Input.UserType == "Stadium Manager")
+                {
+                    if (Input.StadiumName == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "The Stadium Name field is required for Stadium Managers.");
+                        return Page();
+                    }
+                    else
+                    {
+                        var stadium = _context.Stadiums.Where(x => x.Name == Input.ClubName).FirstOrDefault();
+                        if (stadium == null)
+                        {
+                            ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing stadium.");
+                            return Page();
+                        }
+                    }
+                }
+                if (Input.UserType == "Fan")
+                {
+                    if (Input.NationalId == null || Input.PhoneNumber == null || Input.Address == null || Input.DateOfBirth == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "The National ID, Phone Number, Address and Date of Birth fields are required for Fans.");
+                        return Page();
+                    }
+                }
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
@@ -151,16 +196,70 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                     var roleResult = await _userManager.AddToRoleAsync(user, Input.UserType);
 
-                    /* ----------------------- ADD SPECIFIC USER TYPE DATA HERE
-                    var systemAdmin = new SystemAdmin
+                    // Create models for user types
+                    if (Input.UserType == "System Admin")
                     {
-                        Name = Input.Name,
-                        User = user
-                    };
+                        var systemAdmin = new SystemAdmin
+                        {
+                            Name = Input.Name,
+                            User = user
+                        };
 
-                    _context.SystemAdmins.Add(systemAdmin);
-                    _context.SaveChanges();
-                    // ----------------------- */
+                        _context.SystemAdmins.Add(systemAdmin);
+                        _context.SaveChanges();
+                    }
+                    if (Input.UserType == "Association Manager")
+                    {
+                        var associationManager = new AssociationManager
+                        {
+                            Name = Input.Name,
+                            User = user
+                        };
+
+                        _context.AssociationManagers.Add(associationManager);
+                        _context.SaveChanges();
+                    }
+                    if (Input.UserType == "Club Representative")
+                    {
+                        var club = _context.Clubs.Where(x => x.Name == Input.ClubName).First();
+                        var clubRepresentative = new ClubRepresentative
+                        {
+                            Name = Input.Name,
+                            User = user,
+                            Club = club,
+                        };
+
+                        _context.ClubRepresentatives.Add(clubRepresentative);
+                        _context.SaveChanges();
+                    }
+                    if (Input.UserType == "Stadium Manager")
+                    {
+                        var stadium = _context.Stadiums.Where(x => x.Name == Input.StadiumName).First();
+                        var stadiumManager = new StadiumManager
+                        {
+                            Name = Input.Name,
+                            User = user,
+                            Stadium = stadium, 
+                        };
+
+                        _context.StadiumManagers.Add(stadiumManager);
+                        _context.SaveChanges();
+                    }
+                    if (Input.UserType == "Fan")
+                    {
+                        var fan = new Fan
+                        {
+                            Name = Input.Name,
+                            User = user,
+                            NationalId = Input.NationalId,
+                            Phone = Input.PhoneNumber,
+                            Address = Input.Address,
+                            DateOfBirth = Input.DateOfBirth
+                        };
+
+                        _context.Fans.Add(fan);
+                        _context.SaveChanges();
+                    }
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);

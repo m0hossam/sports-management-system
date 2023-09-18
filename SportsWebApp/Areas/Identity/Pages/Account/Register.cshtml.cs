@@ -196,6 +196,8 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                     var roleResult = await _userManager.AddToRoleAsync(user, Input.UserType);
 
+                    string returnController = "Home"; // precaution
+
                     // Create models for user types
                     if (Input.UserType == "System Admin")
                     {
@@ -207,6 +209,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                         _context.SystemAdmins.Add(systemAdmin);
                         _context.SaveChanges();
+                        returnController = "SystemAdmins";
                     }
                     if (Input.UserType == "Association Manager")
                     {
@@ -218,6 +221,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                         _context.AssociationManagers.Add(associationManager);
                         _context.SaveChanges();
+                        returnController = "AssociationManagers";
                     }
                     if (Input.UserType == "Club Representative")
                     {
@@ -231,6 +235,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                         _context.ClubRepresentatives.Add(clubRepresentative);
                         _context.SaveChanges();
+                        returnController = "ClubRepresentatives";
                     }
                     if (Input.UserType == "Stadium Manager")
                     {
@@ -244,6 +249,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                         _context.StadiumManagers.Add(stadiumManager);
                         _context.SaveChanges();
+                        returnController = "StadiumManagers";
                     }
                     if (Input.UserType == "Fan")
                     {
@@ -259,10 +265,11 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                         _context.Fans.Add(fan);
                         _context.SaveChanges();
+                        returnController = "Fans";
                     }
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnUrl);
+                    return RedirectToAction("Index", returnController);
                 }
                 foreach (var error in result.Errors)
                 {

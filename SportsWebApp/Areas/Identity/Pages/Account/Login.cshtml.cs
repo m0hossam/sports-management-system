@@ -21,11 +21,13 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -105,7 +107,33 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+
+                    var user = await _userManager.FindByNameAsync(Input.Username);
+                    var role = await _userManager.GetRolesAsync(user);
+                    string returnController = "Home";
+
+                    if (role[0] == "System Admin")
+                    {
+                        returnController = "SystemAdmins";
+                    }
+                    if (role[0] == "Association Manager")
+                    {
+                        returnController = "AssociationManagers";
+                    }
+                    if (role[0] == "Club Representative")
+                    {
+                        returnController = "ClubRepresentatives";
+                    }
+                    if (role[0] == "Stadium Managers")
+                    {
+                        returnController = "StadiumManagers";
+                    }
+                    if (role[0] == "Fan")
+                    {
+                        returnController = "Fans";
+                    }
+
+                    return RedirectToAction("Index", returnController);
                 }
                 if (result.RequiresTwoFactor)
                 {

@@ -52,6 +52,7 @@ artifacts/
 # DNX
 project.lock.json
 artifacts/
+Migrations/
 
 *_i.c
 *_p.c

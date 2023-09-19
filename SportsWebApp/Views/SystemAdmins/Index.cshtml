@@ -4,7 +4,15 @@
     ViewData["Title"] = "System Admins Dashboard";
 }
 
-<div>
-    <p>Hi, @Model.Name.</p>
-    <p>Welcome to the @ViewData["Title"]!</p>
-</div>
+<h2>Hi, @Model.Name.</h2>
+<h1>Welcome to the @ViewData["Title"]!</h1>
+<p>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a asp-action="AddClub">Add a club</a>
+        </li>
+        <li class="list-group-item">
+            <a asp-action="DeleteClub">Delete a club</a>
+        </li>
+    </ul>
+</p>

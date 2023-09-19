@@ -36,139 +36,61 @@ namespace SportsWebApp.Controllers
             return View(systemAdmin);
         }
 
-        
-
-        // GET: SystemAdmins/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.SystemAdmins == null)
-            {
-                return NotFound();
-            }
-
-            var systemAdmin = await _context.SystemAdmins
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (systemAdmin == null)
-            {
-                return NotFound();
-            }
-
-            return View(systemAdmin);
-        }
-
-        // GET: SystemAdmins/Create
-        public IActionResult Create()
+        // GET: SystemAdmins/AddClub
+        public IActionResult AddClub()
         {
             return View();
         }
 
-        // POST: SystemAdmins/Create
+        // POST: SystemAdmins/AddClub
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] SystemAdmin systemAdmin)
+        public async Task<IActionResult> AddClub([Bind("Id,Name,Location")] Club club)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(systemAdmin);
+                var duplicateClub = _context.Clubs.FirstOrDefault(x => x.Name == club.Name);
+                if (duplicateClub != null)
+                {
+                    ModelState.AddModelError(string.Empty, $"A club with the name of '{duplicateClub.Name}' already exists.");
+                    return View(club);
+                }
+
+                _context.Add(club);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(systemAdmin);
+            return View(club);
         }
 
-        // GET: SystemAdmins/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: SystemAdmins/DeleteClub/5
+        public IActionResult DeleteClub()
         {
-            if (id == null || _context.SystemAdmins == null)
-            {
-                return NotFound();
-            }
-
-            var systemAdmin = await _context.SystemAdmins.FindAsync(id);
-            if (systemAdmin == null)
-            {
-                return NotFound();
-            }
-            return View(systemAdmin);
+            return View();
         }
 
-        // POST: SystemAdmins/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        // POST: SystemAdmins/DeleteClub/5
+        [HttpPost, ActionName("DeleteClub")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] SystemAdmin systemAdmin)
+        public async Task<IActionResult> DeleteClub([Bind("Name")] Club wantedClub)
         {
-            if (id != systemAdmin.Id)
+            if (_context.Clubs == null)
             {
-                return NotFound();
+                return Problem("Entity set 'SportsWebAppContext.Clubs'  is null.");
             }
 
-            if (ModelState.IsValid)
+            var club = _context.Clubs.FirstOrDefault(x => x.Name == wantedClub.Name);
+            if (club == null)
             {
-                try
-                {
-                    _context.Update(systemAdmin);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SystemAdminExists(systemAdmin.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(systemAdmin);
-        }
-
-        // GET: SystemAdmins/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.SystemAdmins == null)
-            {
-                return NotFound();
+                ModelState.AddModelError(string.Empty, $"There exists no club with the name of {wantedClub.Name}.");
+                return View(wantedClub);
             }
 
-            var systemAdmin = await _context.SystemAdmins
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (systemAdmin == null)
-            {
-                return NotFound();
-            }
-
-            return View(systemAdmin);
-        }
-
-        // POST: SystemAdmins/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.SystemAdmins == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.SystemAdmins'  is null.");
-            }
-            var systemAdmin = await _context.SystemAdmins.FindAsync(id);
-            if (systemAdmin != null)
-            {
-                _context.SystemAdmins.Remove(systemAdmin);
-            }
-            
+            _context.Clubs.Remove(club);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool SystemAdminExists(int id)
-        {
-          return (_context.SystemAdmins?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

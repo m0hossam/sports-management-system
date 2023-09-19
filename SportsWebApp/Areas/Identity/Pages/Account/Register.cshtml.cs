@@ -149,7 +149,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        var club = _context.Clubs.Where(x => x.Name == Input.ClubName).FirstOrDefault();
+                        var club = _context.Clubs.FirstOrDefault(x => x.Name == Input.ClubName);
                         if (club == null)
                         {
                             ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing club.");
@@ -166,7 +166,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        var stadium = _context.Stadiums.Where(x => x.Name == Input.ClubName).FirstOrDefault();
+                        var stadium = _context.Stadiums.FirstOrDefault(x => x.Name == Input.ClubName);
                         if (stadium == null)
                         {
                             ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing stadium.");

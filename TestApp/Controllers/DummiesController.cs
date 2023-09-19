@@ -2,106 +2,95 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SportsWebApp.Data;
-using SportsWebApp.Models;
+using TestApp.Data;
+using TestApp.Models;
 
-namespace SportsWebApp.Controllers
+namespace TestApp.Controllers
 {
-    [Authorize(Roles = "System Admin")]
-    public class SystemAdminsController : Controller
+    public class DummiesController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly TestAppContext _context;
 
-        public SystemAdminsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public DummiesController(TestAppContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
-        // GET: SystemAdmins
+        // GET: Dummies
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            var systemAdmin = _context.SystemAdmins.FirstOrDefault(x => x.User == user);
-            if (systemAdmin == null)
-            {
-                return NotFound();
-            }
-            return View(systemAdmin);
+              return _context.Dummy != null ? 
+                          View(await _context.Dummy.ToListAsync()) :
+                          Problem("Entity set 'TestAppContext.Dummy'  is null.");
         }
 
-        
-
-        // GET: SystemAdmins/Details/5
+        // GET: Dummies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.SystemAdmins == null)
+            if (id == null || _context.Dummy == null)
             {
                 return NotFound();
             }
 
-            var systemAdmin = await _context.SystemAdmins
+            var dummy = await _context.Dummy
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (systemAdmin == null)
+            if (dummy == null)
             {
                 return NotFound();
             }
 
-            return View(systemAdmin);
+            return View(dummy);
         }
 
-        // GET: SystemAdmins/Create
+        // GET: Dummies/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: SystemAdmins/Create
+        // POST: Dummies/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] SystemAdmin systemAdmin)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Dummy dummy)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(systemAdmin);
+                _context.Add(dummy);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(systemAdmin);
+            return View(dummy);
         }
 
-        // GET: SystemAdmins/Edit/5
+        // GET: Dummies/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.SystemAdmins == null)
+            if (id == null || _context.Dummy == null)
             {
                 return NotFound();
             }
 
-            var systemAdmin = await _context.SystemAdmins.FindAsync(id);
-            if (systemAdmin == null)
+            var dummy = await _context.Dummy.FindAsync(id);
+            if (dummy == null)
             {
                 return NotFound();
             }
-            return View(systemAdmin);
+            return View(dummy);
         }
 
-        // POST: SystemAdmins/Edit/5
+        // POST: Dummies/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] SystemAdmin systemAdmin)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Dummy dummy)
         {
-            if (id != systemAdmin.Id)
+            if (id != dummy.Id)
             {
                 return NotFound();
             }
@@ -110,12 +99,12 @@ namespace SportsWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(systemAdmin);
+                    _context.Update(dummy);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SystemAdminExists(systemAdmin.Id))
+                    if (!DummyExists(dummy.Id))
                     {
                         return NotFound();
                     }
@@ -126,49 +115,49 @@ namespace SportsWebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(systemAdmin);
+            return View(dummy);
         }
 
-        // GET: SystemAdmins/Delete/5
+        // GET: Dummies/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.SystemAdmins == null)
+            if (id == null || _context.Dummy == null)
             {
                 return NotFound();
             }
 
-            var systemAdmin = await _context.SystemAdmins
+            var dummy = await _context.Dummy
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (systemAdmin == null)
+            if (dummy == null)
             {
                 return NotFound();
             }
 
-            return View(systemAdmin);
+            return View(dummy);
         }
 
-        // POST: SystemAdmins/Delete/5
+        // POST: Dummies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.SystemAdmins == null)
+            if (_context.Dummy == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.SystemAdmins'  is null.");
+                return Problem("Entity set 'TestAppContext.Dummy'  is null.");
             }
-            var systemAdmin = await _context.SystemAdmins.FindAsync(id);
-            if (systemAdmin != null)
+            var dummy = await _context.Dummy.FindAsync(id);
+            if (dummy != null)
             {
-                _context.SystemAdmins.Remove(systemAdmin);
+                _context.Dummy.Remove(dummy);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool SystemAdminExists(int id)
+        private bool DummyExists(int id)
         {
-          return (_context.SystemAdmins?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Dummy?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

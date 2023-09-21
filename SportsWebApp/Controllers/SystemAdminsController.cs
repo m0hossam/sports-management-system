@@ -60,18 +60,18 @@ namespace SportsWebApp.Controllers
 
                 _context.Add(club);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{club.Name}' was created successfully." });
             }
             return View(club);
         }
 
-        // GET: SystemAdmins/DeleteClub/5
+        // GET: SystemAdmins/DeleteClub
         public IActionResult DeleteClub()
         {
             return View();
         }
 
-        // POST: SystemAdmins/DeleteClub/5
+        // POST: SystemAdmins/DeleteClub
         [HttpPost, ActionName("DeleteClub")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteClub([Bind("Name")] Club wantedClub)
@@ -90,7 +90,14 @@ namespace SportsWebApp.Controllers
 
             _context.Clubs.Remove(club);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{club.Name}' was deleted successfully." });
+        }
+
+        // GET: SystemAdmins/SuccessfulOperation
+        public IActionResult SuccessfulOperation(string? msg)
+        {
+            TempData["Success Message"] = (msg != null) ? msg : "";
+            return View();
         }
     }
 }

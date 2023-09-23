@@ -72,7 +72,7 @@ namespace SportsWebApp.Controllers
         }
 
         // POST: SystemAdmins/DeleteClub
-        [HttpPost, ActionName("DeleteClub")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteClub([Bind("Name")] Club wantedClub)
         {
@@ -92,6 +92,40 @@ namespace SportsWebApp.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{club.Name}' was deleted successfully." });
         }
+
+        // AddStadium GET & POST
+
+        // DeleteStadium GET & POST
+
+        // GET: SystemAdmins/BlockFan
+        public IActionResult BlockFan()
+        {
+            return View();
+        }
+
+        // POST: SystemAdmins/BlockFan
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BlockFan([Bind("NationalId")] Fan wantedFan)
+        {
+            if (_context.Fans == null)
+            {
+                return Problem("Entity set 'SportsWebAppContext.Fans'  is null.");
+            }
+
+            var fan = _context.Fans.FirstOrDefault(x => x.NationalId == wantedFan.NationalId);
+            if (fan == null)
+            {
+                ModelState.AddModelError(string.Empty, $"There exists no fan with a national ID '{wantedFan.NationalId}'.");
+                return View(wantedFan);
+            }
+
+            fan.IsBlocked = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"The fan with the national ID of '{fan.NationalId}' was successfully blocked." });
+        }
+
+        // UnblockFan GET & POST
 
         // GET: SystemAdmins/SuccessfulOperation
         public IActionResult SuccessfulOperation(string? msg)

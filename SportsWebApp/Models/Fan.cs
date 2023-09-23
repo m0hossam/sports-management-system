@@ -24,7 +24,7 @@ namespace SportsWebApp.Models
         public string? Address { get; set; }
 
         [Required]
-        public bool IsBlocked { get; set; }
+        public bool IsBlocked { get; set; } = false;
 
         [Required]
         public IdentityUser? User { get; set; }

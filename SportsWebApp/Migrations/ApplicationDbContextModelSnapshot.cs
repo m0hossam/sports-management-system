@@ -276,7 +276,7 @@ namespace SportsWebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ClubId")
+                    b.Property<int>("Club.Id")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -289,7 +289,8 @@ namespace SportsWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClubId");
+                    b.HasIndex("Club.Id")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -346,16 +347,16 @@ namespace SportsWebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ClubRepresentativeId")
+                    b.Property<int>("ClubRepresentativeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsApproved")
+                    b.Property<bool?>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MatchId")
+                    b.Property<int>("MatchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StadiumId")
+                    b.Property<int>("StadiumId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -417,9 +418,6 @@ namespace SportsWebApp.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -445,7 +443,7 @@ namespace SportsWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StadiumId")
+                    b.Property<int>("Stadium.Id")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -454,7 +452,8 @@ namespace SportsWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StadiumId");
+                    b.HasIndex("Stadium.Id")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -492,34 +491,10 @@ namespace SportsWebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("MatchId")
+                    b.Property<int>("FanId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchId");
-
-                    b.ToTable("Tickets");
-                });
-
-            modelBuilder.Entity("SportsWebApp.Models.TicketTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("FanId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MatchId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TicketId")
+                    b.Property<int>("MatchId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -528,9 +503,7 @@ namespace SportsWebApp.Migrations
 
                     b.HasIndex("MatchId");
 
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("TicketTransactions");
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -598,8 +571,10 @@ namespace SportsWebApp.Migrations
             modelBuilder.Entity("SportsWebApp.Models.ClubRepresentative", b =>
                 {
                     b.HasOne("SportsWebApp.Models.Club", "Club")
-                        .WithMany()
-                        .HasForeignKey("ClubId");
+                        .WithOne("Representative")
+                        .HasForeignKey("SportsWebApp.Models.ClubRepresentative", "Club.Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
@@ -627,15 +602,21 @@ namespace SportsWebApp.Migrations
                 {
                     b.HasOne("SportsWebApp.Models.ClubRepresentative", "ClubRepresentative")
                         .WithMany()
-                        .HasForeignKey("ClubRepresentativeId");
+                        .HasForeignKey("ClubRepresentativeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SportsWebApp.Models.Match", "Match")
                         .WithMany()
-                        .HasForeignKey("MatchId");
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SportsWebApp.Models.Stadium", "Stadium")
                         .WithMany()
-                        .HasForeignKey("StadiumId");
+                        .HasForeignKey("StadiumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ClubRepresentative");
 
@@ -668,8 +649,10 @@ namespace SportsWebApp.Migrations
             modelBuilder.Entity("SportsWebApp.Models.StadiumManager", b =>
                 {
                     b.HasOne("SportsWebApp.Models.Stadium", "Stadium")
-                        .WithMany()
-                        .HasForeignKey("StadiumId");
+                        .WithOne("Manager")
+                        .HasForeignKey("SportsWebApp.Models.StadiumManager", "Stadium.Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
@@ -695,32 +678,31 @@ namespace SportsWebApp.Migrations
 
             modelBuilder.Entity("SportsWebApp.Models.Ticket", b =>
                 {
-                    b.HasOne("SportsWebApp.Models.Match", "Match")
-                        .WithMany()
-                        .HasForeignKey("MatchId");
-
-                    b.Navigation("Match");
-                });
-
-            modelBuilder.Entity("SportsWebApp.Models.TicketTransaction", b =>
-                {
                     b.HasOne("SportsWebApp.Models.Fan", "Fan")
                         .WithMany()
-                        .HasForeignKey("FanId");
+                        .HasForeignKey("FanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SportsWebApp.Models.Match", "Match")
                         .WithMany()
-                        .HasForeignKey("MatchId");
-
-                    b.HasOne("SportsWebApp.Models.Ticket", "Ticket")
-                        .WithMany()
-                        .HasForeignKey("TicketId");
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Fan");
 
                     b.Navigation("Match");
+                });
 
-                    b.Navigation("Ticket");
+            modelBuilder.Entity("SportsWebApp.Models.Club", b =>
+                {
+                    b.Navigation("Representative");
+                });
+
+            modelBuilder.Entity("SportsWebApp.Models.Stadium", b =>
+                {
+                    b.Navigation("Manager");
                 });
 #pragma warning restore 612, 618
         }

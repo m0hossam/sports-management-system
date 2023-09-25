@@ -14,13 +14,12 @@ namespace SportsWebApp.Models
         [Required]
         public DateTime EndTime { get; set; }
 
-        [Required]
-        public int NumberOfAttendees { get; set; }
+        public int NumberOfAttendees { get; set; } = 0;
 
         public Club? HomeClub { get; set; }
 
         public Club? AwayClub { get; set; }
 
-        public Stadium? Stadium { get; set; }
+        public Stadium? Stadium { get; set; } = null; // null if stadium hasn't been decided yet
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SportsWebApp.Models
 {
@@ -10,7 +11,9 @@ namespace SportsWebApp.Models
         [Required]
         public string? Name { get; set; }
 
-        public Club? Club { get; set; }
+        [Required]
+        [ForeignKey("Club.Id")]
+        public Club Club { get; set; } = null!;
 
         [Required]
         public IdentityUser? User { get; set; }

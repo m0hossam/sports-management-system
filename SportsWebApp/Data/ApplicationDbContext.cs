@@ -21,7 +21,6 @@ namespace SportsWebApp.Data
         public DbSet<Match> Matches { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<HostRequest> HostRequests { get; set; }
-        public DbSet<TicketTransaction> TicketTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

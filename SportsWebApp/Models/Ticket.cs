@@ -9,9 +9,10 @@ namespace SportsWebApp.Models
     {
         public int Id { get; set; }
 
-        [Required] 
-        public bool IsAvailable { get; set; }
+        [Required]
+        public Fan? Fan { get; set; }
 
+        [Required]
         public Match? Match { get; set; }
     }
 }

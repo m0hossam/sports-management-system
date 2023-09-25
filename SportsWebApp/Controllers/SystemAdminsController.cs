@@ -88,8 +88,14 @@ namespace SportsWebApp.Controllers
                 return View(wantedClub);
             }
 
+            var clubRep = _context.ClubRepresentatives.FirstOrDefault(x => x.Club == club);
+            if (clubRep != null)
+            {
+                await _userManager.DeleteAsync(clubRep.User); // why is clubRep.User null ??!!
+            }
             _context.Clubs.Remove(club);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{club.Name}' was deleted successfully." });
         }
 

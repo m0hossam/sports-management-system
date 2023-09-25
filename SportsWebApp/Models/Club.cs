@@ -11,5 +11,7 @@ namespace SportsWebApp.Models
 
         [Required]
         public string? Location { get; set; }
+
+        public ClubRepresentative? Representative { get; set; }
     }
 }

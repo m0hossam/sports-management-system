@@ -15,7 +15,6 @@ namespace SportsWebApp.Models
         [Required]
         public int Capacity { get; set; }
 
-        [Required]
-        public bool IsAvailable { get; set; }
+        public StadiumManager? Manager { get; set; }
     }
 }

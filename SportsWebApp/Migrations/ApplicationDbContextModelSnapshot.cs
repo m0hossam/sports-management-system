@@ -276,7 +276,7 @@ namespace SportsWebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Club.Id")
+                    b.Property<int>("ClubId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -289,8 +289,7 @@ namespace SportsWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Club.Id")
-                        .IsUnique();
+                    b.HasIndex("ClubId");
 
                     b.HasIndex("UserId");
 
@@ -309,8 +308,7 @@ namespace SportsWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DateOfBirth")
-                        .IsRequired()
+                    b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsBlocked")
@@ -443,7 +441,7 @@ namespace SportsWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Stadium.Id")
+                    b.Property<int>("StadiumId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -452,8 +450,7 @@ namespace SportsWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Stadium.Id")
-                        .IsUnique();
+                    b.HasIndex("StadiumId");
 
                     b.HasIndex("UserId");
 
@@ -571,8 +568,8 @@ namespace SportsWebApp.Migrations
             modelBuilder.Entity("SportsWebApp.Models.ClubRepresentative", b =>
                 {
                     b.HasOne("SportsWebApp.Models.Club", "Club")
-                        .WithOne("Representative")
-                        .HasForeignKey("SportsWebApp.Models.ClubRepresentative", "Club.Id")
+                        .WithMany()
+                        .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -649,8 +646,8 @@ namespace SportsWebApp.Migrations
             modelBuilder.Entity("SportsWebApp.Models.StadiumManager", b =>
                 {
                     b.HasOne("SportsWebApp.Models.Stadium", "Stadium")
-                        .WithOne("Manager")
-                        .HasForeignKey("SportsWebApp.Models.StadiumManager", "Stadium.Id")
+                        .WithMany()
+                        .HasForeignKey("StadiumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -693,16 +690,6 @@ namespace SportsWebApp.Migrations
                     b.Navigation("Fan");
 
                     b.Navigation("Match");
-                });
-
-            modelBuilder.Entity("SportsWebApp.Models.Club", b =>
-                {
-                    b.Navigation("Representative");
-                });
-
-            modelBuilder.Entity("SportsWebApp.Models.Stadium", b =>
-                {
-                    b.Navigation("Manager");
                 });
 #pragma warning restore 612, 618
         }

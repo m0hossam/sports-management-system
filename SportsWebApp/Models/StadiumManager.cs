@@ -10,13 +10,12 @@ namespace SportsWebApp.Models
         public int Id { get; set; }
 
         [Required]
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         [Required]
-        [ForeignKey("Stadium.Id")]
-        public Stadium Stadium { get; set; } = null!;
+        public required Stadium Stadium { get; set; }
 
         [Required]
-        public IdentityUser? User { get; set; }
+        public required IdentityUser User { get; set; }
     }
 }

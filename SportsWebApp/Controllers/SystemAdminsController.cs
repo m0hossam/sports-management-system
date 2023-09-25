@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -88,11 +89,10 @@ namespace SportsWebApp.Controllers
                 return View(wantedClub);
             }
 
-            var clubRep = _context.ClubRepresentatives.FirstOrDefault(x => x.Club == club);
-            if (clubRep != null)
-            {
-                await _userManager.DeleteAsync(clubRep.User); // why is clubRep.User null ??!!
-            }
+            // Remove matches in which club participates/participated
+            var matches = _context.Matches.Where(x => x.HomeClub == club || x.AwayClub == club);
+            _context.Matches.RemoveRange(matches);
+
             _context.Clubs.Remove(club);
             await _context.SaveChangesAsync();
 

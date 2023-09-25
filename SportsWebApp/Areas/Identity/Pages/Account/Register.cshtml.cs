@@ -121,7 +121,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
             [Display(Name = "Date of Birth")]
             [DataType(DataType.Date)]
-            public DateTime? DateOfBirth { get; set; }
+            public DateTime DateOfBirth { get; set; }
 
             [Display(Name = "Address")]
             public string Address { get; set; }
@@ -139,7 +139,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // Extra validation for user types:
+                // Extra validation for user types ###
                 if (Input.UserType == "Club Representative")
                 {
                     if (Input.ClubName == null)
@@ -147,14 +147,19 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                         ModelState.AddModelError(string.Empty, "The Club Name field is required for Club Representatives.");
                         return Page();
                     }
-                    else
+
+                    var club = _context.Clubs.FirstOrDefault(x => x.Name == Input.ClubName);
+                    if (club == null)
                     {
-                        var club = _context.Clubs.FirstOrDefault(x => x.Name == Input.ClubName);
-                        if (club == null)
-                        {
-                            ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing club.");
-                            return Page();
-                        }
+                        ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing club.");
+                        return Page();
+                    }
+
+                    var clubRep = _context.ClubRepresentatives.FirstOrDefault(x => x.Club == club);
+                    if (clubRep != null)
+                    {
+                        ModelState.AddModelError(string.Empty, $"There already is a Club Representative for '{club.Name}'.");
+                        return Page();
                     }
                 }
                 if (Input.UserType == "Stadium Manager")
@@ -164,14 +169,19 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                         ModelState.AddModelError(string.Empty, "The Stadium Name field is required for Stadium Managers.");
                         return Page();
                     }
-                    else
+
+                    var stadium = _context.Stadiums.FirstOrDefault(x => x.Name == Input.ClubName);
+                    if (stadium == null)
                     {
-                        var stadium = _context.Stadiums.FirstOrDefault(x => x.Name == Input.ClubName);
-                        if (stadium == null)
-                        {
-                            ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing stadium.");
-                            return Page();
-                        }
+                        ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing stadium.");
+                        return Page();
+                    }
+
+                    var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.Stadium == stadium);
+                    if (stadiumManager != null)
+                    {
+                        ModelState.AddModelError(string.Empty, $"There already is a Stadium Manager for '{stadium.Name}'");
+                        return Page();
                     }
                 }
                 if (Input.UserType == "Fan")
@@ -181,7 +191,15 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                         ModelState.AddModelError(string.Empty, "The National ID, Phone Number, Address and Date of Birth fields are required for Fans.");
                         return Page();
                     }
+
+                    var fan = _context.Fans.FirstOrDefault(x => x.NationalId == Input.NationalId);
+                    if (fan != null)
+                    {
+                        ModelState.AddModelError(string.Empty, $"A fan with the national ID '{fan.NationalId}' already exists.");
+                        return Page();
+                    }
                 }
+                // End of extra validation for user types ###
 
                 var user = CreateUser();
 
@@ -198,7 +216,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
                     string returnController = "Home"; // precaution
 
-                    // Create models for user types
+                    // Create models for user types ###
                     if (Input.UserType == "System Admin")
                     {
                         var systemAdmin = new SystemAdmin
@@ -267,6 +285,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                         _context.SaveChanges();
                         returnController = "Fans";
                     }
+                    // End of model creation for user types ###
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", returnController);

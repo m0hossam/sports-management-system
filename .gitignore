@@ -53,6 +53,7 @@ artifacts/
 project.lock.json
 artifacts/
 Migrations/
+appsettings.json
 
 *_i.c
 *_p.c

@@ -99,7 +99,43 @@ namespace SportsWebApp.Controllers
             return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{club.Name}' was deleted successfully." });
         }
 
-        // AddStadium GET & POST
+
+        // GET: SystemAdmins/AddStadium
+        public IActionResult AddStadium()
+        {
+            return View();
+        }
+
+        // POST: SystemAdmins/AddStadium
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddStadium([Bind("Id,Name,Location,Capacity")] Stadium stadium)
+        {
+            if (ModelState.IsValid)
+            {
+                var duplicateStadium = _context.Stadiums.FirstOrDefault(x => x.Name == stadium.Name);
+                if (duplicateStadium != null)
+                {
+                    ModelState.AddModelError(string.Empty, $"A stadium with the name of '{duplicateStadium.Name}' already exists.");
+                    return View(stadium);
+                }
+
+                if(stadium.Capacity < 0)
+                {
+                    ModelState.AddModelError(string.Empty, $"Capacity shouldn't be negative.");
+                    return View(stadium);
+                }
+
+                _context.Add(stadium);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{stadium.Name}' was created successfully." });
+            }
+            return View(stadium);
+        }
+
+
 
         // DeleteStadium GET & POST
 

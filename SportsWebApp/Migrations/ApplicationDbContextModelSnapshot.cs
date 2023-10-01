@@ -308,7 +308,8 @@ namespace SportsWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateOfBirth")
+                    b.Property<DateTime?>("DateOfBirth")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsBlocked")

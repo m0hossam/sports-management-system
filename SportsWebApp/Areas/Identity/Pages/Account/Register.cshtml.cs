@@ -121,7 +121,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
 
             [Display(Name = "Date of Birth")]
             [DataType(DataType.Date)]
-            public DateTime DateOfBirth { get; set; }
+            public DateTime? DateOfBirth { get; set; }
 
             [Display(Name = "Address")]
             public string Address { get; set; }

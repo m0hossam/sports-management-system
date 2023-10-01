@@ -18,7 +18,7 @@ namespace SportsWebApp.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public required DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [Required]
         public required string Address { get; set; }

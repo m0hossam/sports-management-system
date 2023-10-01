@@ -137,7 +137,6 @@ namespace SportsWebApp.Controllers
 
 
         /// <summary>
-        // asd
         /// </summary>
         /// <returns></returns>
         // DeleteStadium GET & POST

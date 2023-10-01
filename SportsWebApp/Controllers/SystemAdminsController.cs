@@ -136,7 +136,7 @@ namespace SportsWebApp.Controllers
         }
 
 
-
+        //
         // DeleteStadium GET & POST
 
         // GET: SystemAdmins/BlockFan

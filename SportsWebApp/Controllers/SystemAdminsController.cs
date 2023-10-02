@@ -201,7 +201,35 @@ namespace SportsWebApp.Controllers
             return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"The fan with the national ID of '{fan.NationalId}' was successfully blocked." });
         }
 
-        // UnblockFan GET & POST
+        // GET: SystemAdmins/UnblockFan
+        public IActionResult UnblockFan()
+        {
+            return View();
+        }
+
+        //Post: SystemAdmins/UnblockFan
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnblockFan([Bind("NationalId")] Fan wantedFan)
+        {
+            if (_context.Fans == null)
+            {
+                return Problem("Entity set 'SportsWebAppContext.Fans'  is null.");
+            }
+            var fan = _context.Fans.FirstOrDefault(x => x.NationalId == wantedFan.NationalId);
+            if (fan == null)
+            {
+                ModelState.AddModelError(string.Empty, $"There exists no fan with a national ID '{wantedFan.NationalId}'.");
+                return View(wantedFan);
+            }
+
+            fan.IsBlocked = false;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"The fan with the national ID of '{fan.NationalId}' was successfully unblocked." });
+
+        }
+
+
 
         // GET: SystemAdmins/SuccessfulOperation
         public IActionResult SuccessfulOperation(string? msg)

@@ -130,7 +130,7 @@ namespace SportsWebApp.Controllers
 
                 _context.Add(stadium);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{stadium.Name}' was created successfully." });
+                return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{stadium.Name}' was createdQ successfully." });
             }
             return View(stadium);
         }

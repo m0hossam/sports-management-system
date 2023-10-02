@@ -140,7 +140,38 @@ namespace SportsWebApp.Controllers
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        // DeleteStadium GET & POST
+        // GET: SystemAdmins/DeleteStadium
+        public IActionResult DeleteStadium()
+        {
+            return View();
+        }
+
+        // POST: SystemAdmins/DeleteStadium
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStadium([Bind("Name")] Stadium wantedStadium)
+        {
+            if (_context.Stadiums == null)
+            {
+                return Problem("Entity set 'SportsWebAppContext.Stadium'  is null.");
+            }
+
+            var stadium = _context.Stadiums.FirstOrDefault(x => x.Name == wantedStadium.Name);
+            if (stadium == null)
+            {
+                ModelState.AddModelError(string.Empty, $"There exists no stadium with the name of {wantedStadium.Name}.");
+                return View(wantedStadium);
+            }
+
+
+            _context.Stadiums.Remove(stadium);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{stadium.Name}' was deleted successfully." });
+        }
+
+
+
 
         // GET: SystemAdmins/BlockFan
         public IActionResult BlockFan()

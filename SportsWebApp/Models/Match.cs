@@ -9,11 +9,14 @@ namespace SportsWebApp.Models
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Start Time")]
         public required DateTime StartTime { get; set; }
 
         [Required]
+        [Display(Name = "End Time")]
         public required DateTime EndTime { get; set; }
 
+        [Display(Name = "Attendance")]
         public int NumberOfAttendees { get; set; } = 0;
 
         public Club? HomeClub { get; set; }

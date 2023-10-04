@@ -1,7 +1,12 @@
-﻿@{
-    ViewData["Title"] = "Club Representatives Dashboard";
+﻿@model SportsWebApp.Models.ClubRepresentative
+
+@{
+    ViewData["Title"] = "Club Representative Dashboard";
 }
 
-<div>
-    <p>Welcome to the @ViewData["Title"]!</p>
-</div>
+<h2>Hi, @Model.Name.</h2>
+<h1>Welcome to the @ViewData["Title"]!</h1>
+<p>
+    <ul class="list-group">
+    </ul>
+</p>

@@ -11,6 +11,7 @@ namespace SportsWebApp.Models
         public required string Name { get; set; }
 
         [Required]
+        [Display(Name = "National ID")]
         public required string NationalId { get; set; }
 
         [Required]
@@ -18,6 +19,7 @@ namespace SportsWebApp.Models
 
         [Required]
         [DataType(DataType.Date)]
+        [Display(Name = "Date of Birth")]
         public DateTime? DateOfBirth { get; set; }
 
         [Required]

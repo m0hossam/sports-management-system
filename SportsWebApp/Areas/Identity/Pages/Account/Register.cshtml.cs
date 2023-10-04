@@ -170,7 +170,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                         return Page();
                     }
 
-                    var stadium = _context.Stadiums.FirstOrDefault(x => x.Name == Input.ClubName);
+                    var stadium = _context.Stadiums.FirstOrDefault(x => x.Name == Input.StadiumName);
                     if (stadium == null)
                     {
                         ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing stadium.");

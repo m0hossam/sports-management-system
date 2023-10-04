@@ -131,7 +131,7 @@ namespace SportsWebApp.Controllers
 
                 _context.Add(stadium);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{stadium.Name}' was createdQ successfully." });
+                return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Stadium '{stadium.Name}' was created successfully." });
             }
             return View(stadium);
         }
@@ -153,7 +153,7 @@ namespace SportsWebApp.Controllers
         {
             if (_context.Stadiums == null)
             {
-                return Problem("Entity set 'SportsWebAppContext.Stadium'  is null.");
+                return Problem("Entity set 'SportsWebAppContext.Stadiums'  is null.");
             }
 
             var stadium = _context.Stadiums.FirstOrDefault(x => x.Name == wantedStadium.Name);
@@ -167,7 +167,7 @@ namespace SportsWebApp.Controllers
             _context.Stadiums.Remove(stadium);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Club '{stadium.Name}' was deleted successfully." });
+            return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Stadium '{stadium.Name}' was deleted successfully." });
         }
 
 

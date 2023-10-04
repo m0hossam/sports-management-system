@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,149 +16,44 @@ namespace SportsWebApp.Controllers
     public class StadiumManagersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ILogger<StadiumManagersController> _logger;
 
-        public StadiumManagersController(ApplicationDbContext context)
+        public StadiumManagersController(ApplicationDbContext context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ILogger<StadiumManagersController> logger)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _logger = logger;
         }
 
         // GET: StadiumManagers
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
-
-        // GET: StadiumManagers/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.StadiumManagers == null)
-            {
-                return NotFound();
-            }
-
-            var stadiumManager = await _context.StadiumManagers
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _userManager.GetUserAsync(User);
+            var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
             if (stadiumManager == null)
             {
-                return NotFound();
-            }
-
-            return View(stadiumManager);
-        }
-
-        // GET: StadiumManagers/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: StadiumManagers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] StadiumManager stadiumManager)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(stadiumManager);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(stadiumManager);
-        }
-
-        // GET: StadiumManagers/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.StadiumManagers == null)
-            {
-                return NotFound();
-            }
-
-            var stadiumManager = await _context.StadiumManagers.FindAsync(id);
-            if (stadiumManager == null)
-            {
-                return NotFound();
-            }
-            return View(stadiumManager);
-        }
-
-        // POST: StadiumManagers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] StadiumManager stadiumManager)
-        {
-            if (id != stadiumManager.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if (user == null)
                 {
-                    _context.Update(stadiumManager);
-                    await _context.SaveChangesAsync();
+                    return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 }
-                catch (DbUpdateConcurrencyException)
+
+                var result = await _userManager.DeleteAsync(user);
+                var userId = await _userManager.GetUserIdAsync(user);
+                if (!result.Succeeded)
                 {
-                    if (!StadiumManagerExists(stadiumManager.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw new InvalidOperationException($"Unexpected error occurred deleting user.");
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(stadiumManager);
-        }
 
-        // GET: StadiumManagers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.StadiumManagers == null)
-            {
+                await _signInManager.SignOutAsync();
+
+                _logger.LogInformation("User with ID '{UserId}' was deleted due to a dependency on a deleted stadium entity.", userId);
+
                 return NotFound();
             }
-
-            var stadiumManager = await _context.StadiumManagers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (stadiumManager == null)
-            {
-                return NotFound();
-            }
-
             return View(stadiumManager);
-        }
-
-        // POST: StadiumManagers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.StadiumManagers == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.StadiumManagers'  is null.");
-            }
-            var stadiumManager = await _context.StadiumManagers.FindAsync(id);
-            if (stadiumManager != null)
-            {
-                _context.StadiumManagers.Remove(stadiumManager);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool StadiumManagerExists(int id)
-        {
-          return (_context.StadiumManagers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

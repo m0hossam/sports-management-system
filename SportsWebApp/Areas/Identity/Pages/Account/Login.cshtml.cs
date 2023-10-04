@@ -124,7 +124,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                     {
                         returnController = "ClubRepresentatives";
                     }
-                    if (role[0] == "Stadium Managers")
+                    if (role[0] == "Stadium Manager")
                     {
                         returnController = "StadiumManagers";
                     }

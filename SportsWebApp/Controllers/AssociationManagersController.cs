@@ -35,5 +35,13 @@ namespace SportsWebApp.Controllers
             }
             return View(associationManager);
         }
+
+        // GET: AssociationManagers/UpcomingMatches
+        public async Task<IActionResult> UpcomingMatches()
+        {
+            return _context.Matches != null ?
+            View(await _context.Matches.ToListAsync()) :
+            Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
+        }
     }
 }

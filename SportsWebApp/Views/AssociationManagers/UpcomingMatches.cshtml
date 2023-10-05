@@ -1,0 +1,34 @@
+﻿@model IEnumerable<SportsWebApp.Models.Match>
+
+@{
+    ViewData["Title"] = "Upcoming Matches";
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <caption>List of upcoming matches</caption>
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@Html.DisplayNameFor(model => model.HomeClub)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.AwayClub)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.StartTime)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.EndTime)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Stadium)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.NumberOfAttendees)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var match in Model) 
+            {
+                <tr>
+                    <td>@((match.HomeClub != null) ? Html.DisplayFor(x => match.HomeClub.Name) : "-")</td>
+                    <td>@((match.AwayClub != null) ? Html.DisplayFor(x => match.AwayClub.Name) : "-")</td>
+                    <td>@Html.DisplayFor(x => match.StartTime)</td>
+                    <td>@Html.DisplayFor(x => match.EndTime)</td>
+                    <td>@((match.Stadium != null) ? Html.DisplayFor(x => match.Stadium.Name) : "TBD")</td>
+                    <td>@Html.DisplayFor(x => match.NumberOfAttendees)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

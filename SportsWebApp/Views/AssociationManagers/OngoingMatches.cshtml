@@ -1,12 +1,12 @@
 ﻿@model IEnumerable<SportsWebApp.Models.Match>
 
 @{
-    ViewData["Title"] = "Upcoming Matches";
+    ViewData["Title"] = "Ongoing Matches";
 }
 
 <div class="table-responsive">
     <table class="table table-bordered">
-        <caption>List of upcoming matches</caption>
+        <caption>List of ongoing matches</caption>
         <thead class="thead-light">
             <tr>
                 <th scope="col">@Html.DisplayNameFor(model => model.HomeClub)</th>
@@ -15,11 +15,10 @@
                 <th scope="col">@Html.DisplayNameFor(model => model.EndTime)</th>
                 <th scope="col">@Html.DisplayNameFor(model => model.Stadium)</th>
                 <th scope="col">@Html.DisplayNameFor(model => model.NumberOfAttendees)</th>
-                <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var match in Model) 
+            @foreach (var match in Model)
             {
                 <tr>
                     <td>@((match.HomeClub != null) ? Html.DisplayFor(x => match.HomeClub.Name) : "-")</td>
@@ -28,7 +27,6 @@
                     <td>@Html.DisplayFor(x => match.EndTime)</td>
                     <td>@((match.Stadium != null) ? Html.DisplayFor(x => match.Stadium.Name) : "TBD")</td>
                     <td>@Html.DisplayFor(x => match.NumberOfAttendees)</td>
-                    <td><a asp-action="DeleteMatch" asp-route-id="@match.Id">Delete</a></td>
                 </tr>
             }
         </tbody>

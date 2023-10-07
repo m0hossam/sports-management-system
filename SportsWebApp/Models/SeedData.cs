@@ -37,6 +37,16 @@ public static class SeedData
                 {
                     Name = "Bayern Munich",
                     Location = "Munich, Germany"
+                },
+                new Club
+                {
+                    Name = "Paris Saint-Germain",
+                    Location = "Paris, France"
+                },
+                new Club
+                {
+                    Name = "Al Ahly",
+                    Location = "Cairo, Egypt"
                 }
             );
             context.Stadiums.AddRange(
@@ -63,6 +73,18 @@ public static class SeedData
                     Name = "Allianz Arena",
                     Location = "Munich, Germany",
                     Capacity = 75000
+                },
+                new Stadium
+                {
+                    Name = "Parc des Princes",
+                    Location = "Paris, France",
+                    Capacity = 47000
+                },
+                new Stadium
+                {
+                    Name = "Al Salam Stadium",
+                    Location = "Cairo, Egypt",
+                    Capacity = 30000
                 }
             );
 
@@ -95,9 +117,17 @@ public static class SeedData
                 {
                     HomeClub = context.Clubs.First(x => x.Name == "Roma"),
                     AwayClub = context.Clubs.First(x => x.Name == "Bayern Munich"),
-                    StartTime = DateTime.Parse("2023-12-12 1:00:00"),
-                    EndTime = DateTime.Parse("2023-12-12 3:00:00"),
+                    StartTime = DateTime.Parse("2020-12-12 1:00:00"),
+                    EndTime = DateTime.Parse("2020-12-12 3:00:00"),
                     Stadium = context.Stadiums.First(x => x.Name == "Stadio Olimpico")
+                },
+                new Match
+                {
+                    HomeClub = context.Clubs.First(x => x.Name == "Paris Saint-Germain"),
+                    AwayClub = context.Clubs.First(x => x.Name == "Al Ahly"),
+                    StartTime = DateTime.Parse("2022-12-12 9:00:00"),
+                    EndTime = DateTime.Parse("2023-12-12 9:00:00"),
+                    Stadium = context.Stadiums.First(x => x.Name == "Parc des Princes")
                 }
             ); ;
 

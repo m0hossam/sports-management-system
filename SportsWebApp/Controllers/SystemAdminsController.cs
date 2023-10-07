@@ -18,11 +18,15 @@ namespace SportsWebApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ILogger<StadiumManagersController> _logger;
 
-        public SystemAdminsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public SystemAdminsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ILogger<StadiumManagersController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _signInManager = signInManager;
+            _logger = logger;
         }
 
         // GET: SystemAdmins
@@ -87,6 +91,23 @@ namespace SportsWebApp.Controllers
             {
                 ModelState.AddModelError(string.Empty, $"There exists no club with the name of {wantedClub.Name}.");
                 return View(wantedClub);
+            }
+
+            // Delete club representative associated with club
+            var clubRep = _context.ClubRepresentatives.Include(x => x.User).Include(x => x.Club).FirstOrDefault(x => x.Club == club);
+
+            if (clubRep != null)
+            {
+                var user = clubRep.User;
+
+                var result = await _userManager.DeleteAsync(user);
+                var userId = await _userManager.GetUserIdAsync(user);
+                if (!result.Succeeded)
+                {
+                    throw new InvalidOperationException($"Unexpected error occurred deleting user.");
+                }
+
+                _logger.LogInformation("User with ID '{UserId}' was deleted because they represent a deleted club entity.", userId);
             }
 
             // Remove matches in which club participates/participated
@@ -163,15 +184,28 @@ namespace SportsWebApp.Controllers
                 return View(wantedStadium);
             }
 
+            // Delete stadium manager associated with stadium
+            var stadiumManager = _context.StadiumManagers.Include(x => x.User).Include(x => x.Stadium).FirstOrDefault(x => x.Stadium == stadium);
+
+            if (stadiumManager != null)
+            {
+                var user = stadiumManager.User;
+
+                var result = await _userManager.DeleteAsync(user);
+                var userId = await _userManager.GetUserIdAsync(user);
+                if (!result.Succeeded)
+                {
+                    throw new InvalidOperationException($"Unexpected error occurred deleting user.");
+                }
+
+                _logger.LogInformation("User with ID '{UserId}' was deleted because they manage a deleted stadium entity.", userId);
+            }
 
             _context.Stadiums.Remove(stadium);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(SuccessfulOperation), new { msg = $"Stadium '{stadium.Name}' was deleted successfully." });
         }
-
-
-
 
         // GET: SystemAdmins/BlockFan
         public IActionResult BlockFan()

@@ -40,7 +40,11 @@ namespace SportsWebApp.Controllers
         public async Task<IActionResult> UpcomingMatches()
         {
             return _context.Matches != null ?
-            View(await _context.Matches.ToListAsync()) :
+            View(await _context.Matches
+            .Include(x => x.HomeClub)
+            .Include(x => x.AwayClub)
+            .Include(x => x.Stadium)
+            .ToListAsync()) :
             Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
         }
     }

@@ -19,12 +19,15 @@ namespace SportsWebApp.Models
         [Display(Name = "Attendance")]
         public int NumberOfAttendees { get; set; } = 0;
 
+        public int? HomeClubId { get; set; }
         [Display(Name = "Home Club")]
         public Club? HomeClub { get; set; }
 
+        public int? AwayClubId { get; set; }
         [Display(Name = "Away Club")]
         public Club? AwayClub { get; set; }
 
+        public int? StadiumId { get; set; }
         public Stadium? Stadium { get; set; } = null; // null if stadium hasn't been decided yet
     }
 }

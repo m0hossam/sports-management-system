@@ -248,7 +248,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                         {
                             Name = Input.Name,
                             User = user,
-                            Club = club,
+                            ClubId = club.Id,
                         };
 
                         _context.ClubRepresentatives.Add(clubRepresentative);
@@ -262,7 +262,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                         {
                             Name = Input.Name,
                             User = user,
-                            Stadium = stadium, 
+                            StadiumId = stadium.Id, 
                         };
 
                         _context.StadiumManagers.Add(stadiumManager);

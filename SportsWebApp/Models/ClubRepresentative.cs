@@ -12,7 +12,8 @@ namespace SportsWebApp.Models
         public required string Name { get; set; }
 
         [Required]
-        public required Club Club { get; set; }
+        public required int ClubId { get; set; }
+        public Club Club { get; set; } = null!;
 
         [Required]
         public required IdentityUser User { get; set; }

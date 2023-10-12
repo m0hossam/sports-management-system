@@ -1,0 +1,48 @@
+﻿@model SportsWebApp.Models.Match
+
+@{
+    ViewData["Title"] = "Add Match";
+}
+
+<h1>Add Match</h1>
+
+<h4>Match</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddMatch">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="HomeClubId" class="control-label"></label>
+                <select asp-for="HomeClubId" class="form-control" asp-items="ViewBag.HomeClubId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="AwayClubId" class="control-label"></label>
+                <select asp-for="AwayClubId" class="form-control" asp-items="ViewBag.AwayClubId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartTime" class="control-label"></label>
+                <input asp-for="StartTime" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndTime" class="control-label"></label>
+                <input asp-for="EndTime" class="form-control" />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<div>
+    <a asp-action="Index">Back to dashboard</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

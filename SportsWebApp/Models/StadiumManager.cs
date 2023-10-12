@@ -13,7 +13,8 @@ namespace SportsWebApp.Models
         public required string Name { get; set; }
 
         [Required]
-        public required Stadium Stadium { get; set; }
+        public required int StadiumId { get; set; }
+        public Stadium Stadium { get; set; } = null!;
 
         [Required]
         public required IdentityUser User { get; set; }

@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
 using SportsWebApp.Data;
 using SportsWebApp.Models;
+using SQLitePCL;
 
 namespace SportsWebApp.Controllers
 {
@@ -125,5 +127,66 @@ namespace SportsWebApp.Controllers
             .ToListAsync()) :
             Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
         }
+
+        // GET: AssociationManagers/AddMatch
+        public IActionResult AddMatch()
+        {
+            ViewData["HomeClubId"] = new SelectList(_context.Clubs, "Id", "Name");
+            ViewData["AwayClubId"] = new SelectList(_context.Clubs, "Id", "Name");
+            return View();
+        }
+
+        // POST: AssociationManagers/AddMatch
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddMatch([Bind("Id,HomeClubId,AwayClubId,StartTime,EndTime")] Match match)
+        {
+            bool isPossible = true;
+
+            if (match.HomeClubId == match.AwayClubId)
+            {
+                isPossible = false;
+                ModelState.AddModelError(string.Empty, "You have to choose two different clubs.");
+            }
+            if (match.EndTime <= match.StartTime)
+            {
+                isPossible = false;
+                ModelState.AddModelError(string.Empty, "The match's end time must be later than its start time.");
+            }
+            if (match.StartTime <= DateTime.Now)
+            {
+                isPossible = false;
+                ModelState.AddModelError(string.Empty, "The match's start time must be later than the current datetime.");
+            }
+            if (_context.Matches.Any())
+            {
+                if (_context.Matches.Where(x => 
+                (x.HomeClubId == match.HomeClubId || x.AwayClubId == match.HomeClubId || x.HomeClubId == match.AwayClubId || x.AwayClubId == match.AwayClubId) && 
+                !(match.StartTime > x.EndTime || match.EndTime < x.StartTime)).Any())
+                {
+                    isPossible = false;
+                    ModelState.AddModelError(string.Empty, "The clubs you chose have atleast one match with a conflicting time interval.");
+                }
+            }
+
+            if (!isPossible)
+            {
+                ViewData["HomeClubId"] = new SelectList(_context.Clubs, "Id", "Name", match.HomeClubId);
+                ViewData["AwayClubId"] = new SelectList(_context.Clubs, "Id", "Name", match.AwayClubId);
+                return View(match);
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(match);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewData["HomeClubId"] = new SelectList(_context.Clubs, "Id", "Name", match.HomeClubId);
+            ViewData["AwayClubId"] = new SelectList(_context.Clubs, "Id", "Name", match.AwayClubId);
+            return View(match);
+        }
     }
+
 }

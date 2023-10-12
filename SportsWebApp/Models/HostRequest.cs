@@ -11,12 +11,15 @@ namespace SportsWebApp.Models
         public bool? IsApproved { get; set; } = null; //null if unhandled
 
         [Required]
-        public required ClubRepresentative ClubRepresentative { get; set;}
+        public required int ClubRepresentativeId { get; set; }
+        public ClubRepresentative ClubRepresentative { get; set; } = null!;
 
         [Required]
-        public required Match Match { get; set; }
+        public required int MatchId { get; set; }
+        public Match Match { get; set; } = null!;
 
         [Required]
-        public required Stadium Stadium { get; set; }
+        public required int StadiumId { get; set; }
+        public Stadium Stadium { get; set; } = null!;
     }
 }

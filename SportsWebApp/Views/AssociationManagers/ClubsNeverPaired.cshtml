@@ -1,0 +1,27 @@
+﻿@model List<Tuple<string, string>>
+
+@{
+    ViewData["Title"] = "Clubs Never Paired";
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <caption>List of clubs never paired in a match</caption>
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Club 1</th>
+                <th scope="col">Club 2</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pair in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(x => pair.Item1)</td>
+                    <td>@Html.DisplayFor(x => pair.Item2)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="Index">Back to dashboard</a>
+</div>

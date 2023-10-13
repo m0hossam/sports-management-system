@@ -141,21 +141,21 @@ namespace SportsWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddMatch([Bind("Id,HomeClubId,AwayClubId,StartTime,EndTime")] Match match)
         {
-            bool isPossible = true;
+            bool isMatchPossible = true;
 
             if (match.HomeClubId == match.AwayClubId)
             {
-                isPossible = false;
+                isMatchPossible = false;
                 ModelState.AddModelError(string.Empty, "You have to choose two different clubs.");
             }
             if (match.EndTime <= match.StartTime)
             {
-                isPossible = false;
+                isMatchPossible = false;
                 ModelState.AddModelError(string.Empty, "The match's end time must be later than its start time.");
             }
             if (match.StartTime <= DateTime.Now)
             {
-                isPossible = false;
+                isMatchPossible = false;
                 ModelState.AddModelError(string.Empty, "The match's start time must be later than the current datetime.");
             }
             if (_context.Matches.Any())
@@ -164,12 +164,12 @@ namespace SportsWebApp.Controllers
                 (x.HomeClubId == match.HomeClubId || x.AwayClubId == match.HomeClubId || x.HomeClubId == match.AwayClubId || x.AwayClubId == match.AwayClubId) && 
                 !(match.StartTime > x.EndTime || match.EndTime < x.StartTime)).Any())
                 {
-                    isPossible = false;
+                    isMatchPossible = false;
                     ModelState.AddModelError(string.Empty, "The clubs you chose have atleast one match with a conflicting time interval.");
                 }
             }
 
-            if (!isPossible)
+            if (!isMatchPossible)
             {
                 ViewData["HomeClubId"] = new SelectList(_context.Clubs, "Id", "Name", match.HomeClubId);
                 ViewData["AwayClubId"] = new SelectList(_context.Clubs, "Id", "Name", match.AwayClubId);
@@ -187,6 +187,30 @@ namespace SportsWebApp.Controllers
             ViewData["AwayClubId"] = new SelectList(_context.Clubs, "Id", "Name", match.AwayClubId);
             return View(match);
         }
+
+        // GET: AssociationManagers/ClubsNeverPaired
+        public IActionResult ClubsNeverPaired() //THIS DOES NOT WORK 
+        {
+            var pairs = from club1 in _context.Clubs
+                        from club2 in _context.Clubs
+                        where club1.Id < club2.Id
+                        where !_context.Matches.Any(match => (match.HomeClubId == club1.Id && match.AwayClubId == club2.Id) ||
+                        (match.HomeClubId == club2.Id && match.AwayClubId == club1.Id))
+                        select new
+                        {
+                            FirstClubName = club1.Name,
+                            SecondClubName = club2.Name
+                        };
+
+            List<Tuple<string, string>> pairsModel = new();
+            foreach (var pair in pairs.Distinct())
+            {
+                pairsModel.Add(new Tuple<string, string>(pair.FirstClubName, pair.SecondClubName));
+            }
+
+            return View(pairsModel);
+        }
+
     }
 
 }

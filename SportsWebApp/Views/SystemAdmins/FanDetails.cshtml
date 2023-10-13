@@ -1,0 +1,47 @@
+﻿@model SportsWebApp.Models.Fan
+
+@{
+    ViewData["Title"] = "Fan Details";
+}
+
+<div class="table-responsive">
+    <h4>Fan</h4>
+    <table class="table table-bordered">
+        <caption>Fan details</caption>
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.NationalId)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Phone)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.DateOfBirth)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Address)</th>
+                <th scope="col">Status</th>
+                <th scope="col">Block</th>
+                <th scope="col">Unblock</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.DisplayFor(model => model.Name)</td>
+                <td>@Html.DisplayFor(model => model.NationalId)</td>
+                <td>@Html.DisplayFor(model => model.Phone)</td>
+                <td>@Html.DisplayFor(model => model.DateOfBirth)</td>
+                <td>@Html.DisplayFor(model => model.Address)</td>
+                <td>@(Model.IsBlocked ? "Blocked" : "Active")</td>
+                <td>
+                    <form asp-action="BlockFan">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="submit" value="Block" class="btn btn-danger" />
+                    </form>
+                </td>
+                <td>
+                    <form asp-action="UnblockFan">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="submit" value="Unblock" class="btn btn-primary" />
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <a asp-action="Fans">Back to list</a>
+</div>

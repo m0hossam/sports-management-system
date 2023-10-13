@@ -1,0 +1,37 @@
+﻿@model IEnumerable<SportsWebApp.Models.Fan>
+
+@{
+    ViewData["Title"] = "Fans";
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <caption>List of all fans</caption>
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.NationalId)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Phone)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.DateOfBirth)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Address)</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var fan in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(x => fan.Name)</td>
+                    <td>@Html.DisplayFor(x => fan.NationalId)</td>
+                    <td>@Html.DisplayFor(x => fan.Phone)</td>
+                    <td>@Html.DisplayFor(x => fan.DateOfBirth)</td>
+                    <td>@Html.DisplayFor(x => fan.Address)</td>
+                    <td>@(fan.IsBlocked ? "Blocked" : "Active")</td>
+                    <td><a asp-action="FanDetails" asp-route-id="@fan.Id">Block/Unblock</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="Index">Back to dashboard</a>
+</div>

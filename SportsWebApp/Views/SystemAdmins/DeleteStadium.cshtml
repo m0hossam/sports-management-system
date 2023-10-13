@@ -4,33 +4,32 @@
     ViewData["Title"] = "Delete Stadium";
 }
 
-<h1>Delete a stadium</h1>
-
-<h4>Stadium</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="DeleteStadium">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <br />
-            <div class="form-group">
-                <input type="submit" value="Delete Stadium" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+<h1>Delete Stadium</h1>
+<br />
+<h3>Are you sure you want to delete this?</h3>
+<br />
+<div class="table-responsive">
+    <h4>Club</h4>
+    <table class="table table-bordered">
+        <caption>Stadium details</caption>
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Location)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Capacity)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.DisplayFor(model => model.Name)</td>
+                <td>@Html.DisplayFor(model => model.Location)</td>
+                <td>@Html.DisplayFor(model => model.Capacity)</td>
+            </tr>
+        </tbody>
+    </table>
+    <form asp-action="DeleteStadium">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Stadiums">Back to list</a>
+    </form>
 </div>
-
-<div>
-    <a asp-action="Index">Back to dashboard</a>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

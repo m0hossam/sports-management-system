@@ -4,7 +4,7 @@
     ViewData["Title"] = "Add Club";
 }
 
-<h1>Add a club</h1>
+<h1>Add Club</h1>
 
 <h4>Club</h4>
 <hr />
@@ -22,14 +22,13 @@
                 <input asp-for="Location" class="form-control" />
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>
-            <br />
             <div class="form-group">
-                <input type="submit" value="Add Club" class="btn btn-primary" />
+                <input type="submit" value="Add" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
-
+<br />
 <div>
     <a asp-action="Index">Back to dashboard</a>
 </div>

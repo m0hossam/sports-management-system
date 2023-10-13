@@ -1,0 +1,31 @@
+﻿@model IEnumerable<SportsWebApp.Models.Stadium>
+
+@{
+    ViewData["Title"] = "Stadiums";
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <caption>List of all stadiums</caption>
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Location)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Capacity)</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var stadium in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(x => stadium.Name)</td>
+                    <td>@Html.DisplayFor(x => stadium.Location)</td>
+                    <td>@Html.DisplayFor(x => stadium.Capacity)</td>
+                    <td><a asp-action="DeleteStadium" asp-route-id="@stadium.Id">Delete</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="Index">Back to dashboard</a>
+</div>

@@ -56,12 +56,9 @@ namespace SportsWebApp.Controllers
 
             if(stadiumManager == null || _context.HostRequests == null) { return NotFound(); }
 
-            var hostrequest=await _context.HostRequests.Include(x=>x.ClubRepresentative).Include(x=>x.Match).Where(x=>x.StadiumId==stadiumManager.StadiumId).ToListAsync();
+            var hostrequest=await _context.HostRequests.Include(x=>x.ClubRepresentative).Include(x=>x.Stadium).Include(x=>x.Match.HomeClub).Include(x=>x.Match.AwayClub).Where(x=>x.StadiumId==stadiumManager.StadiumId).ToListAsync();
 
             return View(hostrequest);
         }
-
-
-
     }
 }

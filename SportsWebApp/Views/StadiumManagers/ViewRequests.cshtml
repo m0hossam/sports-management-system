@@ -34,16 +34,16 @@
                     @Html.DisplayFor(modelItem => item.ClubRepresentative.Name)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Match.HomeClub)
+                    @Html.DisplayFor(modelItem => item.Match.HomeClub.Name)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Match.AwayClub)
+                    @Html.DisplayFor(modelItem => item.Match.AwayClub.Name)
             </td>
             <td>
                     @Html.DisplayFor(modelItem => item.Match.Stadium.Name)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.IsApproved)
+                    @(item.IsApproved)
             </td>
             <td>
                 <a asp-action="AcceptRequest" asp-route-id="@item.Id">Accept Request</a> |

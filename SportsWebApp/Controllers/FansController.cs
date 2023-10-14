@@ -35,5 +35,21 @@ namespace SportsWebApp.Controllers
             }
             return View(fan);
         }
+
+        // GET: Fan/ViewAvailableMatches
+        public async Task<IActionResult> ViewAvailableMatches()
+        {
+            return _context.Matches != null ?
+            View(await _context.Matches
+            .Include(x => x.HomeClub)
+            .Include(x => x.AwayClub)
+            .Include(x => x.Stadium)
+            .Where(x => x.StartTime > DateTime.UtcNow&&x.Stadium!=null)
+            .OrderBy(x => x.StartTime)
+            .ToListAsync()) :
+            Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
+        }
+
+
     }
 }

@@ -35,5 +35,33 @@ namespace SportsWebApp.Controllers
             }
             return View(stadiumManager);
         }
+
+
+        // GET: ViewStadiumInfo
+        public async Task<IActionResult> ViewStadiumInfo()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var stadiumManager = _context.StadiumManagers.Include(x=>x.Stadium).FirstOrDefault(x => x.User == user);
+            if (stadiumManager == null)
+            {
+                return NotFound();
+            }
+            return View(stadiumManager);
+        }
+
+        public async Task<IActionResult> ViewRequests()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
+
+            if(stadiumManager == null || _context.HostRequests == null) { return NotFound(); }
+
+            var hostrequest=await _context.HostRequests.Include(x=>x.ClubRepresentative).Include(x=>x.Match).Where(x=>x.StadiumId==stadiumManager.StadiumId).ToListAsync();
+
+            return View(hostrequest);
+        }
+
+
+
     }
 }

@@ -1,0 +1,55 @@
+﻿@model IEnumerable<SportsWebApp.Models.HostRequest>
+
+@{
+    ViewData["Title"] = "ViewRequests";
+}
+
+<h1>ViewRequests</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Club Representative Name
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Match.HomeClub)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Match.AwayClub)
+            </th>
+            <th>
+                Stadium Name
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsApproved)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                    @Html.DisplayFor(modelItem => item.ClubRepresentative.Name)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Match.HomeClub)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Match.AwayClub)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Match.Stadium.Name)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.IsApproved)
+            </td>
+            <td>
+                <a asp-action="AcceptRequest" asp-route-id="@item.Id">Accept Request</a> |
+                <a asp-action="RejectRequest" asp-route-id="@item.Id">Reject Request</a> |
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

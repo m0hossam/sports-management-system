@@ -1,0 +1,27 @@
+﻿@model SportsWebApp.Models.StadiumManager
+
+@{
+    ViewData["Title"] = "ViewStadiumInfo";
+}
+
+<h1>Stadium Info</h1>
+
+
+<div>
+    <h4>StadiumManager</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Stadium.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Stadium.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Stadium.Location)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Stadium.Location)
+        </dd>
+    </dl>
+</div>

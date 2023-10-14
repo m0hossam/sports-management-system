@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Mono.TextTemplating;
 using SportsWebApp.Data;
 using SportsWebApp.Models;
 using SQLitePCL;

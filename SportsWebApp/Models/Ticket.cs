@@ -11,10 +11,11 @@ namespace SportsWebApp.Models
 
         [Required]
         public required int FanId { get; set; }
-        public required Fan Fan { get; set; }
+        public Fan? Fan { get; set; }
 
         [Required]
         public required int MatchId { get; set; }
-        public Match Match { get; set; } = null!;
+        public Match? Match { get; set; }
+
     }
 }

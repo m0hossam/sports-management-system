@@ -1,0 +1,32 @@
+﻿@model IEnumerable<SportsWebApp.Models.Ticket>
+
+@{
+    ViewData["Title"] = "ViewAllTickets";
+}
+
+<h1>ViewAllTickets</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Match.HomeClub)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Match.AwayClub)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Match.HomeClub.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Match.AwayClub.Name)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

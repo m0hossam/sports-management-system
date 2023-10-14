@@ -50,6 +50,51 @@ namespace SportsWebApp.Controllers
             Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
         }
 
+        // POST: Fans/PurchaseTicket
+        public async Task<IActionResult> PurchaseTicket(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var fan = _context.Fans.FirstOrDefault(x => x.User == user);
+            if (fan == null)
+            {
+                return NotFound();
+            }
+            if (fan!.IsBlocked)
+            {
+                return Problem("You are blocked.");
+            }
 
+            var match = await _context.Matches.FindAsync(id);
+            if (match == null || match.Stadium == null || match.NumberOfAttendees + 1 > match.Stadium.Capacity)
+            {
+                Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
+            }
+            match!.NumberOfAttendees++;
+
+
+
+            var ticket = new Ticket { FanId = fan.Id, MatchId = id, Fan = fan };
+            _context.Add(ticket);
+
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ViewAllTickets));
+        }
+
+
+        public async Task<IActionResult> ViewAllTickets()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var fan = _context.Fans.FirstOrDefault(x => x.User == user);
+
+            if (fan == null)
+            {
+                return NotFound();
+            }
+            if(_context.Tickets==null)
+                return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
+
+            return View(await _context.Tickets.Include(x=> x.Match).Include(x => x.Match.HomeClub).Include(x => x.Match.AwayClub).Where(x=>x.FanId==fan.Id).ToListAsync());
+        }
     }
 }

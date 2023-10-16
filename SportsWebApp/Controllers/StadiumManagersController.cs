@@ -37,7 +37,7 @@ namespace SportsWebApp.Controllers
         }
 
 
-        // GET: ViewStadiumInfo
+        // POST: ViewStadiumInfo
         public async Task<IActionResult> ViewStadiumInfo()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -49,16 +49,58 @@ namespace SportsWebApp.Controllers
             return View(stadiumManager);
         }
 
+
+        // POST: ViewRequests
         public async Task<IActionResult> ViewRequests()
         {
             var user = await _userManager.GetUserAsync(User);
             var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
 
-            if(stadiumManager == null || _context.HostRequests == null) { return NotFound(); }
+            if(stadiumManager == null || _context.HostRequests == null) return NotFound();
 
             var hostrequest=await _context.HostRequests.Include(x=>x.ClubRepresentative).Include(x=>x.Stadium).Include(x=>x.Match.HomeClub).Include(x=>x.Match.AwayClub).Where(x=>x.StadiumId==stadiumManager.StadiumId).ToListAsync();
 
             return View(hostrequest);
+        }
+
+        // POST: AcceptRequest
+        public async Task<IActionResult> AcceptRequest(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
+
+            var hostrequest = await _context.HostRequests.FindAsync(id);
+
+            if(stadiumManager == null || hostrequest==null) return NotFound();
+
+            var match = await _context.Matches.FindAsync(hostrequest.MatchId);
+            
+            if (match==null) return NotFound();
+            match.StadiumId = stadiumManager.StadiumId;
+            match.Stadium = stadiumManager.Stadium;
+            hostrequest.IsApproved = true;
+
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ViewRequests));
+        }
+
+
+        // POST: RejectRequest
+        public async Task<IActionResult> RejectRequest(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
+
+            var hostrequest = await _context.HostRequests.FindAsync(id);
+
+            if (stadiumManager == null || hostrequest == null) return NotFound();
+
+            hostrequest.IsApproved = false;
+
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ViewRequests));
         }
     }
 }

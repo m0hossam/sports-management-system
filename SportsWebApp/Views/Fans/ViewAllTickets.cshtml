@@ -1,32 +1,49 @@
 ﻿@model IEnumerable<SportsWebApp.Models.Ticket>
 
 @{
-    ViewData["Title"] = "ViewAllTickets";
+    ViewData["Title"] = "All Tickets";
 }
 
-<h1>ViewAllTickets</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Match.HomeClub)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Match.AwayClub)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Match.HomeClub.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Match.AwayClub.Name)
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<h1>All Tickets</h1>
+<br />
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <caption>List of all tickets you purchased</caption>
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Ticket ID</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Match!.HomeClub)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Match!.AwayClub)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Match!.StartTime)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Match!.EndTime)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Match!.Stadium)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Match!.HomeClub!.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Match!.AwayClub!.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Match!.StartTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Match!.EndTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Match!.Stadium!.Name)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="Index">Back to dashboard</a>
+</div>

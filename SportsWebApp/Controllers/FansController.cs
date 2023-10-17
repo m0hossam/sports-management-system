@@ -44,14 +44,38 @@ namespace SportsWebApp.Controllers
             .Include(x => x.HomeClub)
             .Include(x => x.AwayClub)
             .Include(x => x.Stadium)
-            .Where(x => x.StartTime > DateTime.UtcNow&&x.Stadium!=null)
+            .Where(x => x.StartTime > DateTime.UtcNow && x.Stadium != null && x.NumberOfAttendees < x.Stadium.Capacity)
             .OrderBy(x => x.StartTime)
             .ToListAsync()) :
             Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
         }
 
-        // POST: Fans/PurchaseTicket
-        public async Task<IActionResult> PurchaseTicket(int id)
+        // GET: Fans/PurchaseTicket/
+        public async Task<IActionResult> PurchaseTicket(int? id)
+        {
+            if (id == null || _context.Matches == null)
+            {
+                return NotFound();
+            }
+
+            var match = await _context.Matches
+                .Include(x => x.HomeClub)
+                .Include(x => x.AwayClub)
+                .Include(x => x.Stadium)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (match == null)
+            {
+                return NotFound();
+            }
+
+            return View(match);
+        }
+
+        // POST: Fans/PurchaseTicket/
+        [HttpPost, ActionName(nameof(PurchaseTicket))]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PurchaseTicketConfirmed(int id)
         {
             var user = await _userManager.GetUserAsync(User);
             var fan = _context.Fans.FirstOrDefault(x => x.User == user);
@@ -59,25 +83,31 @@ namespace SportsWebApp.Controllers
             {
                 return NotFound();
             }
-            if (fan!.IsBlocked)
+
+            if (fan.IsBlocked)
             {
-                return Problem("You are blocked.");
+                TempData["Message"] = "You are blocked by a system admin.";
+                return RedirectToAction(nameof(ViewAvailableMatches));
             }
 
-            var match = await _context.Matches.FindAsync(id);
-            if (match == null || match.Stadium == null || match.NumberOfAttendees + 1 > match.Stadium.Capacity)
+            var match = await _context.Matches.Include(x => x.Stadium).FirstOrDefaultAsync(x => x.Id == id);
+            if (match == null)
             {
-                Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
+                return NotFound();
             }
-            match!.NumberOfAttendees++;
 
+            if (match.StartTime <= DateTime.UtcNow || match.Stadium == null || match.NumberOfAttendees >= match.Stadium.Capacity)
+            {
+                TempData["Message"] = "Your transaction could not be completed.";
+                return RedirectToAction(nameof(ViewAvailableMatches));
+            }
 
-
+            match.NumberOfAttendees++;
             var ticket = new Ticket { FanId = fan.Id, MatchId = id, Fan = fan };
             _context.Add(ticket);
 
-
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(ViewAllTickets));
         }
 
@@ -91,10 +121,21 @@ namespace SportsWebApp.Controllers
             {
                 return NotFound();
             }
-            if(_context.Tickets==null)
-                return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
 
-            return View(await _context.Tickets.Include(x=> x.Match).Include(x => x.Match.HomeClub).Include(x => x.Match.AwayClub).Where(x=>x.FanId==fan.Id).ToListAsync());
+            if (_context.Tickets == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Tickets' is null.");
+            }
+
+            return View(await _context.Tickets
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.HomeClub)
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.AwayClub)
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.Stadium)
+                .Where(x => x.FanId == fan.Id)
+                .ToListAsync());
         }
     }
 }

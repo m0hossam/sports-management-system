@@ -1,41 +1,41 @@
-﻿@model IEnumerable<SportsWebApp.Models.Ticket>
+﻿@model SportsWebApp.Models.Match
 
 @{
-    ViewData["Title"] = "PurchaseTicket";
+    ViewData["Title"] = "Purchase Ticket";
 }
 
-<h1>PurchaseTicket</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Fan)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Match)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fan.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Match.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<h1>Purchase Ticket</h1>
+<br />
+<h3>Are you sure you want to purchase a ticket for this match?</h3>
+<br />
+<div class="table-responsive">
+    <h4>Match</h4>
+    <table class="table table-bordered">
+        <caption>Match details</caption>
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@Html.DisplayNameFor(model => model.HomeClub)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.AwayClub)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.StartTime)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.EndTime)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.Stadium)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.NumberOfAttendees)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@((Model.HomeClub != null) ? Html.DisplayFor(x => Model.HomeClub.Name) : "-")</td>
+                <td>@((Model.AwayClub != null) ? Html.DisplayFor(x => Model.AwayClub.Name) : "-")</td>
+                <td>@Html.DisplayFor(model => model.StartTime)</td>
+                <td>@Html.DisplayFor(model => model.EndTime)</td>
+                <td>@((Model.Stadium != null) ? Html.DisplayFor(x => Model.Stadium.Name) : "TBD")</td>
+                <td>@Html.DisplayFor(model => model.NumberOfAttendees)</td>
+            </tr>
+        </tbody>
+    </table>
+    <form asp-action="PurchaseTicket">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Buy" class="btn btn-primary" /> |
+        <a asp-action="ViewAvailableMatches">Back to list</a>
+    </form>
+</div>

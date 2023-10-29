@@ -12,14 +12,14 @@ namespace SportsWebApp.Models
 
         [Required]
         public required int ClubRepresentativeId { get; set; }
-        public ClubRepresentative ClubRepresentative { get; set; } = null!;
+        public ClubRepresentative? ClubRepresentative { get; set; } = null!;
 
         [Required]
         public required int MatchId { get; set; }
-        public Match Match { get; set; } = null!;
+        public Match? Match { get; set; } = null!;
 
         [Required]
         public required int StadiumId { get; set; }
-        public Stadium Stadium { get; set; } = null!;
+        public Stadium? Stadium { get; set; } = null!;
     }
 }

@@ -37,11 +37,11 @@ namespace SportsWebApp.Controllers
         }
 
 
-        // POST: ViewStadiumInfo
+        // GET: StadiumManagers/ViewStadiumInfo
         public async Task<IActionResult> ViewStadiumInfo()
         {
             var user = await _userManager.GetUserAsync(User);
-            var stadiumManager = _context.StadiumManagers.Include(x=>x.Stadium).FirstOrDefault(x => x.User == user);
+            var stadiumManager = _context.StadiumManagers.Include(x => x.Stadium).FirstOrDefault(x => x.User == user);
             if (stadiumManager == null)
             {
                 return NotFound();
@@ -50,54 +50,107 @@ namespace SportsWebApp.Controllers
         }
 
 
-        // POST: ViewRequests
+        // GET: StadiumManagers/ViewRequests
         public async Task<IActionResult> ViewRequests()
         {
             var user = await _userManager.GetUserAsync(User);
             var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
 
-            if(stadiumManager == null || _context.HostRequests == null) return NotFound();
+            if (stadiumManager == null)
+            {
+                return NotFound();
+            }
 
-            var hostrequest=await _context.HostRequests.Include(x=>x.ClubRepresentative).Include(x=>x.Stadium).Include(x=>x.Match.HomeClub).Include(x=>x.Match.AwayClub).Where(x=>x.StadiumId==stadiumManager.StadiumId).ToListAsync();
+            if (_context.HostRequests == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.HostRequests'  is null.");
+            }
 
-            return View(hostrequest);
+            var hostRequests = await _context.HostRequests
+                .Include(x => x.ClubRepresentative)
+                .Include(x => x.Stadium)
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.HomeClub)
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.AwayClub)
+                .Where(x => x.StadiumId == stadiumManager.StadiumId)
+                .ToListAsync();
+
+            return View(hostRequests);
         }
 
-        // POST: AcceptRequest
-        public async Task<IActionResult> AcceptRequest(int id)
+        // POST: StadiumManagers/AcceptRequest
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AcceptRequest(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var user = await _userManager.GetUserAsync(User);
             var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
 
-            var hostrequest = await _context.HostRequests.FindAsync(id);
+            var hostRequest = await _context.HostRequests.FindAsync(id);
+            if (stadiumManager == null || hostRequest == null) 
+            { 
+                return NotFound(); 
+            }
 
-            if(stadiumManager == null || hostrequest==null) return NotFound();
+            if (hostRequest.IsApproved != null)
+            {
+                TempData["Message"] = "The request you tried to handle has been already handled.";
+                return RedirectToAction(nameof(ViewRequests));
+            }
 
-            var match = await _context.Matches.FindAsync(hostrequest.MatchId);
-            
-            if (match==null) return NotFound();
+            var match = await _context.Matches.FindAsync(hostRequest.MatchId);
+            if (match == null)
+            {
+                return NotFound();
+            }
+
             match.StadiumId = stadiumManager.StadiumId;
-            match.Stadium = stadiumManager.Stadium;
-            hostrequest.IsApproved = true;
-
+            hostRequest.IsApproved = true;
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ViewRequests));
         }
 
 
-        // POST: RejectRequest
-        public async Task<IActionResult> RejectRequest(int id)
+        // POST: StadiumManagers/RejectRequest
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectRequest(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var user = await _userManager.GetUserAsync(User);
             var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
 
-            var hostrequest = await _context.HostRequests.FindAsync(id);
+            var hostRequest = await _context.HostRequests.FindAsync(id);
+            if (stadiumManager == null || hostRequest == null)
+            {
+                return NotFound();
+            }
 
-            if (stadiumManager == null || hostrequest == null) return NotFound();
+            if (hostRequest.IsApproved != null)
+            {
+                TempData["Message"] = "The request you tried to handle has been already handled.";
+                return RedirectToAction(nameof(ViewRequests));
+            }
 
-            hostrequest.IsApproved = false;
+            var match = await _context.Matches.FindAsync(hostRequest.MatchId);
+            if (match == null)
+            {
+                return NotFound();
+            }
 
+            match.StadiumId = stadiumManager.StadiumId;
+            hostRequest.IsApproved = true;
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ViewRequests));

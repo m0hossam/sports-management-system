@@ -88,10 +88,16 @@ namespace SportsWebApp.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
             }
             var match = await _context.Matches.FindAsync(id);
-            if (match != null)
+            if (match == null)
+            {
+                return NotFound();
+            }
+
+            if (match.StartTime > DateTime.UtcNow)
             {
                 _context.Matches.Remove(match);
             }
+
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(UpcomingMatches));

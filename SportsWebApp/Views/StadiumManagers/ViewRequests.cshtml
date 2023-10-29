@@ -1,10 +1,17 @@
 ﻿@model IEnumerable<SportsWebApp.Models.HostRequest>
 
 @{
-    ViewData["Title"] = "ViewRequests";
+    ViewData["Title"] = "Host Requests";
 }
 
-<h1>ViewRequests</h1>
+<h1>Host Requests</h1>
+
+@{
+    if (TempData["Message"] != null)
+    {
+        <h3 class="text-primary">@TempData["Message"]</h3>
+    }
+}
 
 <table class="table">
     <thead>
@@ -13,56 +20,57 @@
                 Club Representative Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Match.HomeClub)
+                @Html.DisplayNameFor(model => model.Match!.HomeClub)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Match.AwayClub)
+                @Html.DisplayNameFor(model => model.Match!.AwayClub)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Match.StartTime)
+                @Html.DisplayNameFor(model => model.Match!.StartTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Match.EndTime)
+                @Html.DisplayNameFor(model => model.Match!.EndTime)
             </th>
             <th>
                 Stadium Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsApproved)
+                Request Status
             </th>
-            <th></th>
+            <th>
+                Handle Request
+            </th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
             <td>
-                    @Html.DisplayFor(modelItem => item.ClubRepresentative.Name)
+                    @Html.DisplayFor(modelItem => item.ClubRepresentative!.Name)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Match.HomeClub.Name)
+                    @Html.DisplayFor(modelItem => item.Match!.HomeClub!.Name)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Match.AwayClub.Name)
+                    @Html.DisplayFor(modelItem => item.Match!.AwayClub!.Name)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Match.StartTime)
+                    @Html.DisplayFor(modelItem => item.Match!.StartTime)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Match.EndTime)
-            </td>
-            
-            <td>
-                    @Html.DisplayFor(modelItem => item.Stadium.Name)
+                    @Html.DisplayFor(modelItem => item.Match!.EndTime)
             </td>
             <td>
-                    @item.IsApproved
+                    @Html.DisplayFor(modelItem => item.Stadium!.Name)
+            </td>
+            <td>
+                    @(item.IsApproved == null ? "Unhandled" : item.IsApproved == true ? "Approved" : "Rejected")
             </td>
             <td>
                     @{
                         if (item.IsApproved == null)
                             {
-                                <a asp-action="AcceptRequest" asp-route-id="@item.Id">Accept Request | </a>
+                                <a asp-action="AcceptRequest" asp-route-id="@item.Id">Approve Request | </a>
                                 <a asp-action="RejectRequest" asp-route-id="@item.Id">Reject Request</a>
                             }
 

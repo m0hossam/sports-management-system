@@ -6,6 +6,13 @@
 
 <h1>Add A Host Request</h1>
 
+@{
+    if (TempData["Message"] != null)
+    {
+        <h3 class="text-primary">@TempData["Message"]</h3>
+    }
+}
+
 <h4>Host Request</h4>
 <hr />
 <div class="row">

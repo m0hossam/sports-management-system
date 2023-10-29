@@ -77,6 +77,7 @@ namespace SportsWebApp.Controllers
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
+                TempData["Message"] = "There already exists a host request with the same information.";
             }
 
             ViewData["ClubRepresentativeId"] = hostRequest.ClubRepresentativeId;

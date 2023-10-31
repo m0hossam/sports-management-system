@@ -75,7 +75,8 @@ namespace SportsWebApp.Controllers
 
             var match = await _context.Matches.FindAsync(hostrequest.MatchId);
             
-            if (match==null) return NotFound();
+            if (match==null||match.StadiumId!=null) return NotFound();//if match was assigned 
+
             match.StadiumId = stadiumManager.StadiumId;
             match.Stadium = stadiumManager.Stadium;
             hostrequest.IsApproved = true;

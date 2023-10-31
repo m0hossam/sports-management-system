@@ -1,4 +1,4 @@
-﻿@model SportsWebApp.Models.ClubRepresentative
+@model SportsWebApp.Models.ClubRepresentative
 
 @{
     ViewData["Title"] = "Club Representative Dashboard";
@@ -14,5 +14,15 @@
         <li class="list-group-item">
             <a asp-action="ViewUpcomingMatches">View Available Matches</a>
         </li>
+        <li class="list-group-item">
+            <a asp-action="ViewAvailableStadiumsForm">View Available Stadiums</a>
+        </li>
+        <li class="list-group-item">
+            <a asp-action="ViewSentRequests">View Sent Requests</a>
+        </li>
+        <li class="list-group-item">
+            <a asp-action="SendHostRequest">Send Host Request</a>
+        </li>
+        
     </ul>
 </p>

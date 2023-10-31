@@ -13,11 +13,11 @@
         <form asp-action="AddMatch">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="HomeClubId" class="control-label"></label>
+                <label asp-for="HomeClub" class="control-label"></label>
                 <select asp-for="HomeClubId" class="form-control" asp-items="ViewBag.HomeClubId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="AwayClubId" class="control-label"></label>
+                <label asp-for="AwayClub" class="control-label"></label>
                 <select asp-for="AwayClubId" class="form-control" asp-items="ViewBag.AwayClubId"></select>
             </div>
             <div class="form-group">

@@ -1,0 +1,48 @@
+﻿@model SportsWebApp.Models.HostRequest
+
+@{
+    ViewData["Title"] = "Host Request";
+}
+
+<h1>Add A Host Request</h1>
+
+@{
+    if (TempData["Message"] != null)
+    {
+        <h3 class="text-primary">@TempData["Message"]</h3>
+    }
+}
+
+<h4>Host Request</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddHostRequest">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input asp-for="ClubRepresentativeId" class="form-control" value="@ViewData["ClubRepresentativeId"]" hidden />
+            </div>
+            <div class="form-group">
+                <input asp-for="MatchId" class="form-control" value="@ViewData["MatchId"]" hidden />
+            </div>
+            <div class="form-group">
+                <label asp-for="Stadium" class="control-label"></label>
+                <select asp-for="StadiumId" class="form-control" asp-items="ViewBag.StadiumId"></select>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Matches">Back to list</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SportsWebApp.Data;
 using SportsWebApp.Models;
-using SQLitePCL;
 
 namespace SportsWebApp.Controllers
 {
@@ -89,10 +88,16 @@ namespace SportsWebApp.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
             }
             var match = await _context.Matches.FindAsync(id);
-            if (match != null)
+            if (match == null)
+            {
+                return NotFound();
+            }
+
+            if (match.StartTime > DateTime.UtcNow)
             {
                 _context.Matches.Remove(match);
             }
+
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(UpcomingMatches));
@@ -159,8 +164,8 @@ namespace SportsWebApp.Controllers
             }
             if (_context.Matches.Any())
             {
-                if (_context.Matches.Where(x => 
-                (x.HomeClubId == match.HomeClubId || x.AwayClubId == match.HomeClubId || x.HomeClubId == match.AwayClubId || x.AwayClubId == match.AwayClubId) && 
+                if (_context.Matches.Where(x =>
+                (x.HomeClubId == match.HomeClubId || x.AwayClubId == match.HomeClubId || x.HomeClubId == match.AwayClubId || x.AwayClubId == match.AwayClubId) &&
                 !(match.StartTime > x.EndTime || match.EndTime < x.StartTime)).Any())
                 {
                     isMatchPossible = false;
@@ -188,7 +193,7 @@ namespace SportsWebApp.Controllers
         }
 
         // GET: AssociationManagers/ClubsNeverPaired
-        public IActionResult ClubsNeverPaired() //THIS DOES NOT WORK 
+        public IActionResult ClubsNeverPaired() 
         {
             var pairs = from club1 in _context.Clubs
                         from club2 in _context.Clubs
@@ -202,7 +207,7 @@ namespace SportsWebApp.Controllers
                         };
 
             List<Tuple<string, string>> pairsModel = new();
-            foreach (var pair in pairs.Distinct())
+            foreach (var pair in pairs)
             {
                 pairsModel.Add(new Tuple<string, string>(pair.FirstClubName, pair.SecondClubName));
             }

@@ -1,0 +1,29 @@
+﻿@model SportsWebApp.Models.ClubRepresentative
+
+@{
+    ViewData["Title"] = "ViewClubInfo";
+}
+
+<h1>ViewClubInfo</h1>
+
+<div>
+    <h4>ClubRepresentative</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Club.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Club.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Club.Location)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Club.Location)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index">Back to DashBoaerd</a>
+</div>

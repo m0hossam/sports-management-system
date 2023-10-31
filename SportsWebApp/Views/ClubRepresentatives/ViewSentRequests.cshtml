@@ -1,0 +1,55 @@
+﻿@model IEnumerable<SportsWebApp.Models.HostRequest>
+
+@{
+    ViewData["Title"] = "ViewSentRequests";
+}
+
+<h1>ViewSentRequests</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IsApproved)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClubRepresentative)
+            </th>
+            <th>
+                HomeClub
+            </th>
+            <th>
+                AwayClub
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stadium)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+            <tr>
+                <td>
+                    @{
+                        if (item.IsApproved == true) Html.Display("True");
+                        else Html.Display("False");
+                    }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClubRepresentative.Name)
+            </td>
+            <td>
+                 @Html.DisplayFor(modelItem => item.Match.HomeClub.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Match.AwayClub.Name)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.Stadium.Name)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

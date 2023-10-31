@@ -85,5 +85,56 @@ namespace SportsWebApp.Controllers
             ViewData["StadiumId"] = new SelectList(_context.Stadiums, "Id", "Name", hostRequest.StadiumId);
             return View(hostRequest);
         }
+
+
+        // POST: ViewStadiumInfo
+        public async Task<IActionResult> ViewClubInfo()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var clubRep = _context.ClubRepresentatives.Include(x=>x.Club).FirstOrDefault(x => x.User == user);
+            if (clubRep == null)
+            {
+                return NotFound();
+            }
+
+            return View(clubRep);
+        }
+
+
+        // GET: ViewAvailableStadiums
+
+        public async Task<IActionResult> ViewAvailableStadiumsForm()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ViewAvailableStadiums(DateTime starttime, DateTime endtime)
+        {
+            var stadiium = _context.Stadiums.Where(s => !_context.Matches.Any(m=> m.StadiumId==s.Id && !(endtime<m.StartTime || starttime>m.EndTime)));
+            return View(stadiium);
+        }
+
+
+
+        public async Task<IActionResult> ViewUpcomingMatches()
+        {
+            var matches =await _context.Matches.Include(x=>x.AwayClub).Include(x=>x.HomeClub).Include(x=>x.Stadium).Where(x => x.StartTime >= DateTime.UtcNow).ToListAsync();
+            if (matches == null) return NotFound();
+            return View(matches);
+        }
+
+        public async Task<IActionResult> ViewSentRequests()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var clubRep = _context.ClubRepresentatives.FirstOrDefault(x => x.User == user);
+            if (clubRep == null)
+            {
+                return NotFound();
+            }
+
+            var hostRequest = _context.HostRequests.Include(x=>x.Match.HomeClub).Include(x => x.Match.AwayClub).Include(x=>x.Stadium).Where(x => x.ClubRepresentativeId== clubRep.Id);
+            return View(hostRequest);
+        }
     }
 }

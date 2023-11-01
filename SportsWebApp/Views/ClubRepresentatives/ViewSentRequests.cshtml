@@ -1,55 +1,57 @@
 ﻿@model IEnumerable<SportsWebApp.Models.HostRequest>
 
 @{
-    ViewData["Title"] = "ViewSentRequests";
+    ViewData["Title"] = "Sent Requests";
 }
 
-<h1>ViewSentRequests</h1>
+<h1>Sent Requests</h1>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.IsApproved)
+                @Html.DisplayNameFor(model => model.Match!.HomeClub)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ClubRepresentative)
+                @Html.DisplayNameFor(model => model.Match!.AwayClub)
             </th>
             <th>
-                HomeClub
+                @Html.DisplayNameFor(model => model.Match!.StartTime)
             </th>
             <th>
-                AwayClub
+                @Html.DisplayNameFor(model => model.Match!.EndTime)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Stadium)
             </th>
-            <th></th>
+            <th>
+                Request Status
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
             <tr>
                 <td>
-                    @{
-                        if (item.IsApproved == true) Html.Display("True");
-                        else Html.Display("False");
-                    }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ClubRepresentative.Name)
-            </td>
-            <td>
-                 @Html.DisplayFor(modelItem => item.Match.HomeClub.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Match.AwayClub.Name)
-            </td>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.Stadium.Name)
-            </td>
-        </tr>
-}
+                    @Html.DisplayFor(modelItem => item.Match!.HomeClub!.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Match!.AwayClub!.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Match!.StartTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Match!.EndTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Stadium!.Name)
+                </td>
+                <td>
+                    @((item.IsApproved != null) ? (item.IsApproved == true ? "Approved" : "Rejected") : "Unhandled")
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

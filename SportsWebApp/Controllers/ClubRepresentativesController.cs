@@ -87,54 +87,122 @@ namespace SportsWebApp.Controllers
         }
 
 
-        // POST: ViewStadiumInfo
+        // GET: ClubRepresentatives/ViewClubInfo
         public async Task<IActionResult> ViewClubInfo()
         {
             var user = await _userManager.GetUserAsync(User);
-            var clubRep = _context.ClubRepresentatives.Include(x=>x.Club).FirstOrDefault(x => x.User == user);
-            if (clubRep == null)
-            {
-                return NotFound();
-            }
 
-            return View(clubRep);
-        }
-
-
-        // GET: ViewAvailableStadiums
-
-        public async Task<IActionResult> ViewAvailableStadiumsForm()
-        {
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ViewAvailableStadiums(DateTime starttime, DateTime endtime)
-        {
-            var stadiium = _context.Stadiums.Where(s => !_context.Matches.Any(m=> m.StadiumId==s.Id && !(endtime<m.StartTime || starttime>m.EndTime)));
-            return View(stadiium);
-        }
-
-
-
-        public async Task<IActionResult> ViewUpcomingMatches()
-        {
-            var matches =await _context.Matches.Include(x=>x.AwayClub).Include(x=>x.HomeClub).Include(x=>x.Stadium).Where(x => x.StartTime >= DateTime.UtcNow).ToListAsync();
-            if (matches == null) return NotFound();
-            return View(matches);
-        }
-
-        public async Task<IActionResult> ViewSentRequests()
-        {
-            var user = await _userManager.GetUserAsync(User);
             var clubRep = _context.ClubRepresentatives.FirstOrDefault(x => x.User == user);
             if (clubRep == null)
             {
                 return NotFound();
             }
 
-            var hostRequest = _context.HostRequests.Include(x=>x.Match.HomeClub).Include(x => x.Match.AwayClub).Include(x=>x.Stadium).Where(x => x.ClubRepresentativeId== clubRep.Id);
-            return View(hostRequest);
+            var club = _context.Clubs.FirstOrDefault(x => x.Id == clubRep.ClubId);
+            if (club == null)
+            {
+                return NotFound();
+            }
+
+            return View(club);
+        }
+
+
+        // GET: ClubRepresentatives/ViewAvailableStadiumsForm
+        public IActionResult ViewAvailableStadiumsForm()
+        {
+            return View();
+        }
+
+        // GET: ClubRepresentatives/ViewAvailableStadiums/
+        public async Task<IActionResult> ViewAvailableStadiums(DateTime? startTime, DateTime? endTime)
+        {
+            if (_context.Stadiums == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Stadiums'  is null.");
+            }
+
+            if (startTime == null || endTime == null)
+            {
+                TempData["Message"] = "You have to enter a starttime and an endtime.";
+                return ViewAvailableStadiumsForm();
+            }
+
+            if (startTime <= DateTime.UtcNow)
+            {
+                TempData["Message"] = "Please choose a starttime that is later than the current time.";
+                return ViewAvailableStadiumsForm();
+            }
+
+            if (startTime >= endTime)
+            {
+                TempData["Message"] = "Please choose an endtime that is later than the starttime.";
+                return ViewAvailableStadiumsForm();
+            }
+
+            var stadiums = await _context.Stadiums
+                .Where(s => !_context.Matches.Any(m=> m.StadiumId==s.Id && !(endTime<m.StartTime || startTime>m.EndTime)))
+                .ToListAsync();
+
+            return View(stadiums);
+        }
+
+        // GET: ClubRepresentatives/ViewUpcomingMatches
+        public async Task<IActionResult> ViewUpcomingMatches()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var clubRep = _context.ClubRepresentatives.Include(x => x.Club).FirstOrDefault(x => x.User == user);
+            if (clubRep == null)
+            {
+                return NotFound();
+            }
+
+            if (_context.Matches == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
+            }
+
+            var matches = await _context.Matches
+                .Include(x=>x.AwayClub)
+                .Include(x=>x.HomeClub)
+                .Include(x=>x.Stadium)
+                .Where(x => x.StartTime > DateTime.UtcNow && x.HomeClubId == clubRep.ClubId)
+                .ToListAsync();
+
+            if (matches == null) 
+            {
+                return NotFound(); 
+            }
+
+            return View(matches);
+        }
+
+        // GET: ClubRepresentatives/ViewSentRequests
+        public async Task<IActionResult> ViewSentRequests()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var clubRep = _context.ClubRepresentatives.FirstOrDefault(x => x.User == user);
+            if (clubRep == null)
+            {
+                return NotFound();
+            }
+
+            if (_context.HostRequests == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.HostRequests'  is null.");
+            }
+
+            var hostRequests = await _context.HostRequests
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.HomeClub)
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.AwayClub)
+                .Include(x => x.Stadium)
+                .Where(x => x.ClubRepresentativeId == clubRep.Id)
+                .ToListAsync();
+
+            return View(hostRequests);
         }
     }
 }

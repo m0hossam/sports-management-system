@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<SportsWebApp.Models.Stadium>
 
 @{
-    ViewData["Title"] = "ViewAvailableStadiums";
+    ViewData["Title"] = "Available Stadiums";
 }
 
-<h1>ViewAvailableStadiums</h1>
+<h1>Available Stadiums</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h4>List of stadiums available in the interval you specified</h4>
+<hr />
+
 <table class="table">
     <thead>
         <tr>
@@ -21,7 +21,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Capacity)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -35,11 +34,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Capacity)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

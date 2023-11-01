@@ -1,12 +1,19 @@
 ﻿@model SportsWebApp.Models.Match
 
 @{
-    ViewData["Title"] = "ViewAvailableStadiums";
+    ViewData["Title"] = "Available Stadiums";
 }
 
-<h1>ViewAvailableStadiums</h1>
+<h1>Available Stadiums</h1>
 
-<h4>Match</h4>
+@{
+    if (TempData["Message"] != null)
+    {
+        <h3 class="text-primary">@TempData["Message"]</h3>
+    }
+}
+
+<h4>Enter the startime and endtime of the interval you want</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -30,7 +37,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to dashboard</a>
 </div>
 
 @section Scripts {

@@ -2,26 +2,14 @@
 @model IEnumerable<SportsWebApp.Models.Match>
 
 @{
-    ViewData["Title"] = "ViewUpcomingMatches";
+    ViewData["Title"] = "Upcoming Home Matches";
 }
 
-<h1>ViewUpcomingMatches</h1>
+<h1>Upcoming Home Matches</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfAttendees)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.HomeClub)
             </th>
@@ -29,14 +17,29 @@
                 @Html.DisplayNameFor(model => model.AwayClub)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndTime)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Stadium)
             </th>
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfAttendees)
+            </th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.HomeClub!.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AwayClub!.Name)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartTime)
             </td>
@@ -44,29 +47,20 @@
                 @Html.DisplayFor(modelItem => item.EndTime)
             </td>
             <td>
+                @((item.Stadium != null) ? Html.DisplayFor(x => item.Stadium.Name) : "TBD")
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.NumberOfAttendees)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.HomeClub.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AwayClub.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Stadium.Location)
-            </td>
-
                 @{
-                    if(item.Stadium==null)
+                    if(item.Stadium == null)
                     {
-                        <td>
-                            <a asp-action="SendHostRequest" asp-route-id="@item.Id">Send Host Request</a>
-                        </td>
+                        <a asp-action="SendHostRequest" asp-route-id="@item.Id">Send Host Request</a>
                     }
-
-
-            }
+                }
+            </td>
         </tr>
-}
+        }
     </tbody>
 </table>

@@ -65,7 +65,7 @@ public static class SeedData
                 new Stadium
                 {
                     Name = "Santiago Bernabeu",
-                    Location = "Mardid, Spain",
+                    Location = "Madrid, Spain",
                     Capacity = 83000
                 },
                 new Stadium

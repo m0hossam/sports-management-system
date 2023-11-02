@@ -56,7 +56,7 @@
                 @{
                     if(item.Stadium == null)
                     {
-                        <a asp-action="SendHostRequest" asp-route-id="@item.Id">Send Host Request</a>
+                        <a asp-action="AddHostRequest" asp-route-id="@item.Id">Send Host Request</a>
                     }
                 }
             </td>
@@ -64,3 +64,9 @@
         }
     </tbody>
 </table>
+
+<div>
+    <a asp-action="Index">Back to dashboard</a>
+</div>
+
+

@@ -1,0 +1,82 @@
+﻿@model SportsWebApp.Models.HostRequest
+
+@{
+    ViewData["Title"] = "Host Request Details";
+}
+
+<h1>Host Request Details</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Club Representative Name
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Match!.HomeClub)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Match!.AwayClub)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Match!.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Match!.EndTime)
+            </th>
+            <th>
+                Stadium Name
+            </th>
+            <th>
+                Request Status
+            </th>
+            <th>
+                Approve Request
+            </th>
+            <th>
+                Reject Request
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Html.DisplayFor(item => item.ClubRepresentative!.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(item => item.Match!.HomeClub!.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(item => item.Match!.AwayClub!.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(item => item.Match!.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(item => item.Match!.EndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(item => item.Stadium!.Name)
+            </td>
+            <td>
+                @(Model.IsApproved == null ? "Unhandled" : Model.IsApproved == true ? "Approved" : "Rejected")
+            </td>
+            <td>
+                <form asp-action="AcceptRequest">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Approve" class="btn btn-primary" />
+                </form>
+            </td>
+            <td>
+                <form asp-action="RejectRequest">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Reject" class="btn btn-danger" />
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="ViewRequests">Back to list</a>
+</div>

@@ -44,7 +44,7 @@ namespace SportsWebApp.Controllers
             .Include(x => x.HomeClub)
             .Include(x => x.AwayClub)
             .Include(x => x.Stadium)
-            .Where(x => x.StartTime > DateTime.UtcNow && x.Stadium != null && x.NumberOfAttendees < x.Stadium.Capacity)
+            .Where(x => x.StartTime > DateTime.Now && x.Stadium != null && x.NumberOfAttendees < x.Stadium.Capacity)
             .OrderBy(x => x.StartTime)
             .ToListAsync()) :
             Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
@@ -96,7 +96,7 @@ namespace SportsWebApp.Controllers
                 return NotFound();
             }
 
-            if (match.StartTime <= DateTime.UtcNow || match.Stadium == null || match.NumberOfAttendees >= match.Stadium.Capacity)
+            if (match.StartTime <= DateTime.Now || match.Stadium == null || match.NumberOfAttendees >= match.Stadium.Capacity)
             {
                 TempData["Message"] = "Your transaction could not be completed.";
                 return RedirectToAction(nameof(ViewAvailableMatches));

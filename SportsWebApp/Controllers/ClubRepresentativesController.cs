@@ -125,19 +125,19 @@ namespace SportsWebApp.Controllers
             if (startTime == null || endTime == null)
             {
                 TempData["Message"] = "You have to enter a starttime and an endtime.";
-                return ViewAvailableStadiumsForm();
+                return RedirectToAction(nameof(ViewAvailableStadiumsForm));
             }
 
-            if (startTime <= DateTime.UtcNow)
+            if (startTime <= DateTime.Now)
             {
                 TempData["Message"] = "Please choose a starttime that is later than the current time.";
-                return ViewAvailableStadiumsForm();
+                return RedirectToAction(nameof(ViewAvailableStadiumsForm));
             }
 
             if (startTime >= endTime)
             {
                 TempData["Message"] = "Please choose an endtime that is later than the starttime.";
-                return ViewAvailableStadiumsForm();
+                return RedirectToAction(nameof(ViewAvailableStadiumsForm));
             }
 
             var stadiums = await _context.Stadiums
@@ -166,7 +166,7 @@ namespace SportsWebApp.Controllers
                 .Include(x=>x.AwayClub)
                 .Include(x=>x.HomeClub)
                 .Include(x=>x.Stadium)
-                .Where(x => x.StartTime > DateTime.UtcNow && x.HomeClubId == clubRep.ClubId)
+                .Where(x => x.StartTime > DateTime.Now && x.HomeClubId == clubRep.ClubId)
                 .ToListAsync();
 
             if (matches == null) 

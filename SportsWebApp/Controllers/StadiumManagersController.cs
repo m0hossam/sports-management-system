@@ -79,21 +79,42 @@ namespace SportsWebApp.Controllers
             return View(hostRequests);
         }
 
-        // POST: StadiumManagers/AcceptRequest
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AcceptRequest(int? id)
+        // GET: StadiumManagers/RequestDetails/
+        public IActionResult RequestDetails(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
+            if (_context.HostRequests == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.HostRequests'  is null.");
+            }
 
+            var hostRequest = _context.HostRequests
+                .Include(x => x.ClubRepresentative)
+                .Include(x => x.Stadium)
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.HomeClub)
+                .Include(x => x.Match)
+                .ThenInclude(x => x!.AwayClub)
+                .FirstOrDefault(x => x.Id == id);
+            if (hostRequest == null)
+            {
+                return NotFound();
+            }
+
+            return View(hostRequest);
+        }
+
+        // POST: StadiumManagers/AcceptRequest/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AcceptRequest(int id)
+        {
             var hostRequest = await _context.HostRequests.FindAsync(id);
-            if (stadiumManager == null || hostRequest == null) 
+            if (hostRequest == null) 
             { 
                 return NotFound(); 
             }
@@ -110,7 +131,7 @@ namespace SportsWebApp.Controllers
                 return NotFound();
             }
 
-            match.StadiumId = stadiumManager.StadiumId;
+            match.StadiumId = hostRequest.StadiumId;
             hostRequest.IsApproved = true;
 
             await _context.SaveChangesAsync();
@@ -118,21 +139,13 @@ namespace SportsWebApp.Controllers
         }
 
 
-        // POST: StadiumManagers/RejectRequest
+        // POST: StadiumManagers/RejectRequest/
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RejectRequest(int? id)
+        public async Task<IActionResult> RejectRequest(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _userManager.GetUserAsync(User);
-            var stadiumManager = _context.StadiumManagers.FirstOrDefault(x => x.User == user);
-
             var hostRequest = await _context.HostRequests.FindAsync(id);
-            if (stadiumManager == null || hostRequest == null)
+            if (hostRequest == null)
             {
                 return NotFound();
             }
@@ -149,8 +162,8 @@ namespace SportsWebApp.Controllers
                 return NotFound();
             }
 
-            match.StadiumId = stadiumManager.StadiumId;
-            hostRequest.IsApproved = true;
+            match.StadiumId = hostRequest.StadiumId;
+            hostRequest.IsApproved = false;
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ViewRequests));

@@ -67,17 +67,16 @@
                     @(item.IsApproved == null ? "Unhandled" : item.IsApproved == true ? "Approved" : "Rejected")
             </td>
             <td>
-                    @{
-                        if (item.IsApproved == null)
-                            {
-                                <a asp-action="AcceptRequest" asp-route-id="@item.Id">Approve Request | </a>
-                                <a asp-action="RejectRequest" asp-route-id="@item.Id">Reject Request</a>
-                            }
-
-                     }
-                
+                @if (item.IsApproved == null)
+                {
+                    <a asp-action="RequestDetails" asp-route-id="@item.Id">Handle</a>
+                }
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+<div>
+    <a asp-action="Index">Back to dashboard</a>
+</div>

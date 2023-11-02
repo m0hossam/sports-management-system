@@ -45,7 +45,7 @@ namespace SportsWebApp.Controllers
             .Include(x => x.HomeClub)
             .Include(x => x.AwayClub)
             .Include(x => x.Stadium)
-            .Where(x => x.StartTime > DateTime.UtcNow)
+            .Where(x => x.StartTime > DateTime.Now)
             .OrderBy(x => x.StartTime)
             .ToListAsync()) :
             Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
@@ -70,7 +70,7 @@ namespace SportsWebApp.Controllers
                 return NotFound();
             }
 
-            if (match.StartTime <= DateTime.UtcNow) // match already started
+            if (match.StartTime <= DateTime.Now) // match already started
             {
                 return RedirectToAction(nameof(UpcomingMatches));
             }
@@ -93,7 +93,7 @@ namespace SportsWebApp.Controllers
                 return NotFound();
             }
 
-            if (match.StartTime > DateTime.UtcNow)
+            if (match.StartTime > DateTime.Now)
             {
                 _context.Matches.Remove(match);
             }
@@ -112,7 +112,7 @@ namespace SportsWebApp.Controllers
             .Include(x => x.HomeClub)
             .Include(x => x.AwayClub)
             .Include(x => x.Stadium)
-            .Where(x => x.StartTime <= DateTime.UtcNow && x.EndTime > DateTime.UtcNow)
+            .Where(x => x.StartTime <= DateTime.Now && x.EndTime > DateTime.Now)
             .OrderBy(x => x.StartTime)
             .ToListAsync()) :
             Problem("Entity set 'ApplicationDbContext.Matches'  is null.");
@@ -126,7 +126,7 @@ namespace SportsWebApp.Controllers
             .Include(x => x.HomeClub)
             .Include(x => x.AwayClub)
             .Include(x => x.Stadium)
-            .Where(x => x.EndTime <= DateTime.UtcNow)
+            .Where(x => x.EndTime <= DateTime.Now)
             .OrderByDescending(x => x.StartTime)
             .ToListAsync()) :
             Problem("Entity set 'ApplicationDbContext.Matches'  is null.");

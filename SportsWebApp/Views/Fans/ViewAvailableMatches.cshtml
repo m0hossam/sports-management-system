@@ -13,9 +13,11 @@
     }
 }
 
+<h4>Upcoming Matches</h4>
+<hr />
 <div class="table-responsive">
     <table class="table table-bordered">
-        <caption>List of all available match you can attend</caption>
+        <caption>List of all upcoming matches you can attend</caption>
         <thead>
             <tr>
                 <th>
@@ -54,10 +56,10 @@
                     @Html.DisplayFor(modelItem => item.AwayClub!.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.StartTime)
+                    @item.StartTime.ToString("F")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EndTime)
+                    @item.EndTime.ToString("F")
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Stadium!.Name)

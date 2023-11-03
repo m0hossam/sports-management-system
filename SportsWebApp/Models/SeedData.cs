@@ -20,13 +20,13 @@ public static class SeedData
             context.Clubs.AddRange(
                 new Club
                 {
-                    Name = "Arsenal",
-                    Location = "London, UK"
+                    Name = "Liverpool",
+                    Location = "Liverpool, UK"
                 },
                 new Club
                 {
-                    Name = "Roma",
-                    Location = "Rome, Italy"
+                    Name = "Juventus",
+                    Location = "Turin, Italy"
                 },
                 new Club
                 {
@@ -42,25 +42,20 @@ public static class SeedData
                 {
                     Name = "Paris Saint-Germain",
                     Location = "Paris, France"
-                },
-                new Club
-                {
-                    Name = "Al Ahly",
-                    Location = "Cairo, Egypt"
                 }
             );
             context.Stadiums.AddRange(
                 new Stadium
                 {
-                    Name = "Emirates Stadium",
-                    Location = "London, UK",
-                    Capacity = 60000
+                    Name = "Anfield Stadium",
+                    Location = "Liverpool, UK",
+                    Capacity = 53000
                 },
                 new Stadium
                 {
-                    Name = "Stadio Olimpico",
-                    Location = "Rome, Italy",
-                    Capacity = 70000
+                    Name = "Juventus Stadium",
+                    Location = "Turin, Italy",
+                    Capacity = 41000
                 },
                 new Stadium
                 {
@@ -79,12 +74,6 @@ public static class SeedData
                     Name = "Parc des Princes",
                     Location = "Paris, France",
                     Capacity = 47000
-                },
-                new Stadium
-                {
-                    Name = "Al Salam Stadium",
-                    Location = "Cairo, Egypt",
-                    Capacity = 30000
                 }
             );
 
@@ -93,41 +82,44 @@ public static class SeedData
             context.Matches.AddRange(
                 new Match
                 {
-                    HomeClub = context.Clubs.First(x => x.Name == "Arsenal"),
-                    AwayClub = context.Clubs.First(x => x.Name == "Real Madrid"),
-                    StartTime = DateTime.Parse("2023-12-12 12:00:00"),
-                    EndTime = DateTime.Parse("2023-12-12 14:00:00")
+                    HomeClub = context.Clubs.First(x => x.Name == "Liverpool"),
+                    AwayClub = context.Clubs.First(x => x.Name == "Juventus"),
+                    StartTime = DateTime.Parse("2024-6-5 12:00:00"),
+                    EndTime = DateTime.Parse("2024-6-5 14:00:00")
                 },
                 new Match
                 {
                     HomeClub = context.Clubs.First(x => x.Name == "Bayern Munich"),
-                    AwayClub = context.Clubs.First(x => x.Name == "Roma"),
-                    StartTime = DateTime.Parse("2023-12-12 15:00:00"),
-                    EndTime = DateTime.Parse("2023-12-12 17:00:00"),
-                    Stadium = context.Stadiums.First(x => x.Name == "Allianz Arena")
+                    AwayClub = context.Clubs.First(x => x.Name == "Real Madrid"),
+                    StartTime = DateTime.Parse("2023-12-27 15:00:00"),
+                    EndTime = DateTime.Parse("2023-12-27 17:00:00"),
+                    Stadium = context.Stadiums.First(x => x.Name == "Allianz Arena"),
+                    NumberOfAttendees = 12056
                 },
                 new Match
                 {
                     HomeClub = context.Clubs.First(x => x.Name == "Real Madrid"),
-                    AwayClub = context.Clubs.First(x => x.Name == "Arsenal"),
-                    StartTime = DateTime.Parse("2023-12-12 7:00:00"),
-                    EndTime = DateTime.Parse("2023-12-12 9:00:00")
+                    AwayClub = context.Clubs.First(x => x.Name == "Paris Saint-Germain"),
+                    StartTime = DateTime.Parse("2024-1-17 17:00:00"),
+                    EndTime = DateTime.Parse("2024-1-17 19:00:00")
                 },
                 new Match
                 {
-                    HomeClub = context.Clubs.First(x => x.Name == "Roma"),
+                    HomeClub = context.Clubs.First(x => x.Name == "Juventus"),
                     AwayClub = context.Clubs.First(x => x.Name == "Bayern Munich"),
-                    StartTime = DateTime.Parse("2020-12-12 1:00:00"),
-                    EndTime = DateTime.Parse("2020-12-12 3:00:00"),
-                    Stadium = context.Stadiums.First(x => x.Name == "Stadio Olimpico")
+                    StartTime = DateTime.Parse("2023-10-12 21:00:00"),
+                    EndTime = DateTime.Parse("2023-10-12 23:00:00"),
+                    Stadium = context.Stadiums.First(x => x.Name == "Juventus Stadium"),
+                    NumberOfAttendees = 32628
                 },
                 new Match
                 {
                     HomeClub = context.Clubs.First(x => x.Name == "Paris Saint-Germain"),
-                    AwayClub = context.Clubs.First(x => x.Name == "Al Ahly"),
-                    StartTime = DateTime.Parse("2022-12-12 9:00:00"),
-                    EndTime = DateTime.Parse("2023-12-12 9:00:00"),
-                    Stadium = context.Stadiums.First(x => x.Name == "Parc des Princes")
+                    AwayClub = context.Clubs.First(x => x.Name == "Liverpool"),
+                    StartTime = DateTime.Parse("2023-11-3 20:00:00"),
+                    EndTime = DateTime.Parse("2023-11-3 22:00:00"),
+                    Stadium = context.Stadiums.First(x => x.Name == "Parc des Princes"),
+                    NumberOfAttendees = 29809
                 }
             ); ;
 

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using SportsWebApp.Data;
@@ -33,7 +34,9 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
 
-        public string[] RoleNames { get; set; }
+        public readonly SelectList UserTypes;
+        public readonly SelectList Clubs;
+        public readonly SelectList Stadiums;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -50,7 +53,9 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
             _roleManager = roleManager;
             _context = context;
 
-            RoleNames = _roleManager.Roles.Select(x => x.Name).ToArray();
+            UserTypes = new SelectList(_roleManager.Roles.OrderBy(x => x.Name).Select(x => x.Name));
+            Clubs = new SelectList(_context.Clubs.OrderBy(x => x.Name), "Id", "Name");
+            Stadiums = new SelectList(_context.Stadiums.OrderBy(x => x.Name), "Id", "Name");
         }
 
         /// <summary>
@@ -107,17 +112,17 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
             [Display(Name = "Full Name")]
             public string Name { get; set; }
 
-            [Display(Name = "Club Name")]
-            public string ClubName { get; set; }
+            [Display(Name = "Represented Club")]
+            public int? ClubId { get; set; }
 
-            [Display(Name = "Stadium Name")]
-            public string StadiumName { get; set; }
+            [Display(Name = "Managed Stadium")]
+            public int? StadiumId { get; set; }
 
             [Display(Name = "National ID")]
             public string NationalId { get; set; }
 
             [Display(Name = "Phone Number")]
-            public string PhoneNumber {  get; set; }
+            public string PhoneNumber { get; set; }
 
             [Display(Name = "Date of Birth")]
             [DataType(DataType.Date)]
@@ -142,16 +147,16 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                 // Extra validation for user types ###
                 if (Input.UserType == "Club Representative")
                 {
-                    if (Input.ClubName == null)
+                    if (Input.ClubId == null)
                     {
-                        ModelState.AddModelError(string.Empty, "The Club Name field is required for Club Representatives.");
+                        ModelState.AddModelError(string.Empty, "The Club field is required for Club Representatives.");
                         return Page();
                     }
 
-                    var club = _context.Clubs.FirstOrDefault(x => x.Name == Input.ClubName);
+                    var club = _context.Clubs.FirstOrDefault(x => x.Id == Input.ClubId);
                     if (club == null)
                     {
-                        ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing club.");
+                        ModelState.AddModelError(string.Empty, "Invalid club.");
                         return Page();
                     }
 
@@ -164,16 +169,16 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                 }
                 if (Input.UserType == "Stadium Manager")
                 {
-                    if (Input.StadiumName == null)
+                    if (Input.StadiumId == null)
                     {
-                        ModelState.AddModelError(string.Empty, "The Stadium Name field is required for Stadium Managers.");
+                        ModelState.AddModelError(string.Empty, "The Stadium field is required for Stadium Managers.");
                         return Page();
                     }
 
-                    var stadium = _context.Stadiums.FirstOrDefault(x => x.Name == Input.StadiumName);
+                    var stadium = _context.Stadiums.FirstOrDefault(x => x.Id == Input.StadiumId);
                     if (stadium == null)
                     {
-                        ModelState.AddModelError(string.Empty, "You have to enter the name of an already existing stadium.");
+                        ModelState.AddModelError(string.Empty, "Invalid stadium.");
                         return Page();
                     }
 
@@ -243,7 +248,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                     }
                     if (Input.UserType == "Club Representative")
                     {
-                        var club = _context.Clubs.Where(x => x.Name == Input.ClubName).First();
+                        var club = _context.Clubs.Find(Input.ClubId);
                         var clubRepresentative = new ClubRepresentative
                         {
                             Name = Input.Name,
@@ -257,7 +262,7 @@ namespace SportsWebApp.Areas.Identity.Pages.Account
                     }
                     if (Input.UserType == "Stadium Manager")
                     {
-                        var stadium = _context.Stadiums.Where(x => x.Name == Input.StadiumName).First();
+                        var stadium = _context.Stadiums.Find(Input.StadiumId);
                         var stadiumManager = new StadiumManager
                         {
                             Name = Input.Name,

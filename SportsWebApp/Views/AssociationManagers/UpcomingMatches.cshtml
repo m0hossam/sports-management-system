@@ -4,6 +4,8 @@
     ViewData["Title"] = "Upcoming Matches";
 }
 
+<h4>Upcoming Matches</h4>
+<hr />
 <div class="table-responsive">
     <table class="table table-bordered">
         <caption>List of upcoming matches</caption>
@@ -24,8 +26,8 @@
                 <tr>
                     <td>@((match.HomeClub != null) ? Html.DisplayFor(x => match.HomeClub.Name) : "-")</td>
                     <td>@((match.AwayClub != null) ? Html.DisplayFor(x => match.AwayClub.Name) : "-")</td>
-                    <td>@Html.DisplayFor(x => match.StartTime)</td>
-                    <td>@Html.DisplayFor(x => match.EndTime)</td>
+                    <td>@match.StartTime.ToString("F")</td>
+                    <td>@match.EndTime.ToString("F")</td>
                     <td>@((match.Stadium != null) ? Html.DisplayFor(x => match.Stadium.Name) : "TBD")</td>
                     <td>@Html.DisplayFor(x => match.NumberOfAttendees)</td>
                     <td><a asp-action="DeleteMatch" asp-route-id="@match.Id">Delete</a></td>

@@ -13,7 +13,7 @@
     }
 }
 
-<table class="table">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>
@@ -55,10 +55,10 @@
                     @Html.DisplayFor(modelItem => item.Match!.AwayClub!.Name)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Match!.StartTime)
+                    @item.Match!.StartTime.ToString("F")
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Match!.EndTime)
+                    @item.Match!.EndTime.ToString("F")
             </td>
             <td>
                     @Html.DisplayFor(modelItem => item.Stadium!.Name)

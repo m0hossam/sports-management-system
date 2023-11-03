@@ -26,8 +26,8 @@
             <tr>
                 <td>@((Model.HomeClub != null) ? Html.DisplayFor(x => Model.HomeClub.Name) : "-")</td>
                 <td>@((Model.AwayClub != null) ? Html.DisplayFor(x => Model.AwayClub.Name) : "-")</td>
-                <td>@Html.DisplayFor(model => model.StartTime)</td>
-                <td>@Html.DisplayFor(model => model.EndTime)</td>
+                <td>@Model.StartTime.ToString("F")</td>
+                <td>@Model.EndTime.ToString("F")</td>
                 <td>@((Model.Stadium != null) ? Html.DisplayFor(x => Model.Stadium.Name) : "TBD")</td>
                 <td>@Html.DisplayFor(model => model.NumberOfAttendees)</td>
             </tr>

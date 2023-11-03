@@ -6,7 +6,7 @@
 
 <h1>Host Request Details</h1>
 
-<table class="table">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>
@@ -50,10 +50,10 @@
                 @Html.DisplayFor(item => item.Match!.AwayClub!.Name)
             </td>
             <td>
-                @Html.DisplayFor(item => item.Match!.StartTime)
+                @Model.Match!.StartTime.ToString("F")
             </td>
             <td>
-                @Html.DisplayFor(item => item.Match!.EndTime)
+                @Model.Match!.EndTime.ToString("F")
             </td>
             <td>
                 @Html.DisplayFor(item => item.Stadium!.Name)

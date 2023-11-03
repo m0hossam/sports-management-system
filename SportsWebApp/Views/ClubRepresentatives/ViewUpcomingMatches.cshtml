@@ -7,7 +7,7 @@
 
 <h1>Upcoming Home Matches</h1>
 
-<table class="table">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>
@@ -41,10 +41,10 @@
                 @Html.DisplayFor(modelItem => item.AwayClub!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
+                @item.StartTime.ToString("F")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
+                @item.EndTime.ToString("F")
             </td>
             <td>
                 @((item.Stadium != null) ? Html.DisplayFor(x => item.Stadium.Name) : "TBD")

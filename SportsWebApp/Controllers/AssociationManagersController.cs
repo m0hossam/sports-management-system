@@ -197,7 +197,7 @@ namespace SportsWebApp.Controllers
         {
             var pairs = from club1 in _context.Clubs
                         from club2 in _context.Clubs
-                        where club1.Id < club2.Id
+                        where club1.Id != club2.Id
                         where !_context.Matches.Any(match => (match.HomeClubId == club1.Id && match.AwayClubId == club2.Id) ||
                         (match.HomeClubId == club2.Id && match.AwayClubId == club1.Id))
                         select new
@@ -207,7 +207,7 @@ namespace SportsWebApp.Controllers
                         };
 
             List<Tuple<string, string>> pairsModel = new();
-            foreach (var pair in pairs)
+            foreach (var pair in pairs.OrderBy(x => x.FirstClubName))
             {
                 pairsModel.Add(new Tuple<string, string>(pair.FirstClubName, pair.SecondClubName));
             }

@@ -162,7 +162,6 @@ namespace SportsWebApp.Controllers
                 return NotFound();
             }
 
-            match.StadiumId = hostRequest.StadiumId;
             hostRequest.IsApproved = false;
 
             await _context.SaveChangesAsync();

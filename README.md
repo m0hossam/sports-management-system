@@ -6,11 +6,11 @@ A web application where you can manage and organize sports clubs, matches, stadi
 
 ## Table of Contents
 
-- [Objective](https://github.com/m0hossam/sports-management-system#objective)
-- [Features](https://github.com/m0hossam/sports-management-system#features)
-- [Tech](https://github.com/m0hossam/sports-management-system#tech)
-- [How To Run](https://github.com/m0hossam/sports-management-system#how-to-run)
-- [Credits](https://github.com/m0hossam/sports-management-system#credits)
+- [Objective](#objective)
+- [Features](#features)
+- [Tech](#tech)
+- [How To Run](#how-to-run)
+- [Credits](#credits)
 
 ## Objective
 
